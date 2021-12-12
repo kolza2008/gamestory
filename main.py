@@ -77,7 +77,7 @@ def new_game():
         apk.save(os.path.join(os.path.abspath('applications\\'), apk_name))
 
         game = Game(name=name,
-                    description=request.form.get('desc'),
+                    description=request.form.get('desc').replace('\n', '</br>'),
                     photo_name=photo_name,
                     apk_name=apk_name)
         db.session.add(game)
@@ -85,7 +85,6 @@ def new_game():
         return redirect('/admin')
     return render_template('new_game.html')
                 
-
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

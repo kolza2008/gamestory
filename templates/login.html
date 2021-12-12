@@ -1,8 +1,6 @@
-<!DOCTYPE html>
-<head>
-    <title>Авторизация</title>
-</head>
-<body>
+{% extends "base.html"%}
+{% block title %}Авторизация{% endblock %}
+{% block content %}
     <form method="post">
         {% for msg in get_flashed_messages() %}
         <div class="flash" style='color: red'>{{msg}}</div>
@@ -12,4 +10,4 @@
         <input type='submit'>
     </form>
     <a href='/register'>Нет аккаунта? Так сделайте его</a>
-</body>
+{% endblock %}
