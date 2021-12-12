@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<head>
+    <title>Регистрация</title>
+</head>
+<body>
+    <form method="post">
+        {% for msg in get_flashed_messages() %}
+        <div class="flash" style='color: red'>{{msg}}</div>
+        {% endfor %}
+        <input type='text' name='name'></br>
+        <input type='password' name='pass'></br>
+        <input type='submit'>
+    </form>
+</body>
