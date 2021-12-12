@@ -44,6 +44,15 @@ def user_loader(id_):
 def game_page(id_):
     return render_template('game.html', obj=db.session.query(Game).get(id_))
 
+@app.route('/game/photo/<id_>')
+def game_photo(id_):
+    return send_file(os.path.abspath(f'photos/{Game.query.get(id_).photo_name}'))
+
+@app.route('/game/donwload/<id_>')
+def game_apk(id_):
+    name = Game.query.get(id_).apk_name
+    return send_file(os.path.abspath(f'applications/{name}'), as_attachment=True, attachment_filename=name)
+
 
 @app.route('/admin')
 @login_required
