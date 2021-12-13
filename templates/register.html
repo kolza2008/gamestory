@@ -1,12 +1,19 @@
 {% extends "base.html"%}
 {% block title %}Регистрация{% endblock %}
 {% block content %}
-    <form method="post">
+    <form method="post" class='center'>
+        <h1>Регистрация</h1>
         {% for msg in get_flashed_messages() %}
         <div class="flash" style='color: red'>{{msg}}</div>
         {% endfor %}
-        <input type='text' name='name'></br>
-        <input type='password' name='pass'></br>
+        <div class='input'>
+            <label>Никнейм: </label>
+            <input type='text' name='name'>
+        </div>
+        <div class='input'>
+            <label>Пароль: </label>
+            <input type='password' name='pass'>
+        </div>
         <input type='submit'>
     </form>
 {% endblock %}

@@ -1,8 +1,26 @@
 {% extends "base.html"%}
 {% block title %}{{obj.name}}{% endblock %}
+{% block head %}
+<style>
+.main{
+    width:60%
+}  
+.other{
+    width:40%
+}
+</style>
+{% endblock %}
 {% block content %}
-    <h1>{{obj.name}}</h1>
-    <p>{{obj.description}}</p>
-    <img src='/game/photo/{{obj.id}}'>
-    <a href='/game/donwload/{{obj.id}}' download>Скачать</a>
+    <table style='width:100%'>
+        <tr style='width:100%'>
+            <td style='width:60%'>
+                <h1>{{obj.name}}</h1> </br>
+                <p>{{obj.description}}</p>
+            </td>
+            <td style='width:40%; text-align: right;'>
+                <img src='/game/photo/{{obj.id}}'></br>
+                <a class='submit' href='/game/donwload/{{obj.id}}' download>Скачать</a>
+            </td>
+        </tr>
+    </div>
 {% endblock %}

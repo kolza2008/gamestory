@@ -1,0 +1,18 @@
+.input{
+    margin: 8px;
+}
+
+input:not([type=submit]){
+    margin: 8px;
+    padding: 8px;
+    border-radius: 10px;
+}
+
+input[type=submit], .submit{
+    background-color: red;
+    border: 2px solid;
+    border-color: snow;
+    color: white;
+    border-radius: 20px;
+    width: 100%;
+}

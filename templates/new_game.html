@@ -1,13 +1,24 @@
 {% extends "base.html"%}
 {% block title %}Новая игра{% endblock %}
 {% block content %}
-    <form method="post" enctype=multipart/form-data>
-        <input type="text" name='name'>
-        <textarea name='desc'>
-                Описание
-        </textarea>
-        <input type='file' name='photo'>
-        <input type='file' name='apk'>
+    <form method="post" enctype=multipart/form-data class='center'>
+        <h1>Создание игры</h1>
+        <div>
+            <label>Название игры: </label>
+            <input type="text" name='name'>
+        </div>
+        <div>
+            <textarea name='desc' placeholder="Описание игры">
+            </textarea>
+        </div>
+        <div>
+            <label>Обложка игры</label>
+            <input type='file' name='photo'>
+        </div>
+        <div>
+            <label>Файл игры</label>
+            <input type='file' name='apk'>
+        </div>
         <input type='submit'>
     </form>
 {% endblock %}

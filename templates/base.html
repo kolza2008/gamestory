@@ -3,8 +3,56 @@
     <title>{% block title%} {% endblock %}</title>
     {% block head %}
     {% endblock %}
+    <link rel="stylesheet" href='/static/form.css'>
+    <link rel="stylesheet" href='/static/text.css'>
+    <link rel="stylesheet" href='/static/other.css'>
+    <style>
+        .recomendations{
+            text-align: center;
+            border-color: black;
+            border-width: 2px;
+            border-radius: 10px;
+            box-shadow: inset 0 0 4px;
+            padding-left:16px;
+            margin: 4px;
+        }
+        .hrefs{
+           display: inline-block;
+           margin: 4px;
+        }
+        .headers{
+            border-color: black;
+            border-width: 2px;
+            border-radius: 10px;
+            box-shadow: inset 0 0 4px;
+            padding-left:16px;
+        }
+    </style>
 </head>
 <body>
+    <header>
+        <div class='headers'>
+            <h2 style='display: inline-block;'>IMPERATIVE</h2>
+            <div class='hrefs'>
+                {% if cu.is_authenticated %}
+                <a href='/profile/{{cu.id}}' style='display:inline-block;'>Ваш профиль</a>
+                {% else %}
+                <a href="/login" style='display:inline-block;'>Войти</a>
+                <a href="/register" style='display:inline-block;'>Зарегистрироваться</a>
+                {% endif %}
+                {% if cu.role == 1%}
+                <a href='/admin' style='display:inline-block;'>Админка</a>
+                {% endif %}
+            </div>
+        </div>
+        <div class='recomendations'>
+            <a href='/' style='display:inline-block;'>Все игры</a>
+            <!--<form method='get' action='/search' style='display:inline-block;'>
+                <input type="search" name='value' style='display:inline-block;'>
+                <input type="submit" style='display:inline-block;'>
+            </form>-->
+        </div>
+    </header>
     {% block content %}
     {% endblock %}
 </body>
