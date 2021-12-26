@@ -47,6 +47,11 @@ class Game(db.Model):
 #db.drop_all()
 db.create_all()
 
+user = User(nick='admin', role=1)
+user.set_password('admin')
+db.session.add(user)
+db.session.commit()
+
 @lm.user_loader
 def user_loader(id_):
     return db.session.query(User).get(id_)
