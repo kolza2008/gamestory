@@ -1,0 +1,22 @@
+{% extends "base.html"%}
+{% block title %}Title{% endblock %}
+{% block content %}
+<table id='table'>
+</table>
+<script>
+    async function get_games(){
+        return await fetch('/api/games').then(response => response.json());
+    };
+    var games = get_games()
+    console.log(games);
+    console.log(games.main);
+    games.then(function(games){
+        for(let i = 0; i!=games['main'].length;i++){
+            var data = games['main'][i]
+            var obj = document.createElement('tr') 
+            obj.innerHTML = `<td><img src='/game/photo/${data['id']}'</td><td><a href='/game${data['id']}'>${data['name']}</a></td>`
+            document.getElementById('table').appendChild(obj);
+        };
+    });
+</script>
+{% endblock %}
