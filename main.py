@@ -1,5 +1,6 @@
 from flask import *
 from flask_sqlalchemy import *
+from flask_bootstrap import Bootstrap
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, UserMixin, login_required, current_user, login_user, logout_user
 
@@ -12,6 +13,7 @@ lm = LoginManager(app)
 lm.login_view = 'login'
 
 db = SQLAlchemy(app)
+bs = Bootstrap(app)
 
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
@@ -56,23 +58,6 @@ def add_header(response):
     return response 
 
 
-def admin_required(func):
-    def decor(*args, **kwargs):
-        if current_user.role == 1: 
-            func(*args, **kwargs)
-        else:
-            return redirect('/login')
-    return decor
-
-def anonim_required(func):
-    def decor(*args, **kwargs):
-        if not current_user.is_authenticated: 
-            func(*args, **kwargs)
-        else:
-            return redirect('/')
-    return decor
-
-
 @app.route('/')
 def index_page():
     return render_template('main.html', cu=current_user)
@@ -97,14 +82,14 @@ def game_apk(id_):
 
 @app.route('/admin')
 @login_required
-@admin_required
 def admin():
+    if current_user.role != 1: return redirect('/login')
     return render_template('admin.html', cu=current_user)
 
 @app.route('/admin/new_game', methods=['GET', 'POST'])
 @login_required
-@admin_required
 def new_game():
+    if current_user.role != 1: return redirect('/login')
     if request.method == 'POST':
         name = request.form.get('name')
         print(request.files)
@@ -128,8 +113,8 @@ def new_game():
                 
 
 @app.route('/login', methods=['GET', 'POST'])
-@anonim_required
 def login():
+    if current_user.is_authenticated: return redirect('/')
     if request.method == 'POST':
         user = User.query.filter_by(nick=request.form.get('name')).first()
         if not user or not user.check_password(request.form.get('pass')):
@@ -140,7 +125,6 @@ def login():
     return render_template('login.html', cu=current_user)
 
 @app.route('/register', methods=['GET', 'POST'])
-@anonim_required
 def register():
     if current_user.is_authenticated: return redirect('/')
     if request.method == 'POST':

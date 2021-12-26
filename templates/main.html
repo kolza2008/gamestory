@@ -1,7 +1,7 @@
 {% extends "base.html"%}
 {% block title %}Title{% endblock %}
-{% block content %}
-<table id='table'>
+{% block app_content %}
+<table id='table' style='width:100%'>
 </table>
 <script>
     async function get_games(){
@@ -14,7 +14,8 @@
         for(let i = 0; i!=games['main'].length;i++){
             var data = games['main'][i]
             var obj = document.createElement('tr') 
-            obj.innerHTML = `<td><img src='/game/photo/${data['id']}'</td><td><a href='/game${data['id']}'>${data['name']}</a></td>`
+            obj.style = 'border-width: 2px 0px; border-color: black;';
+            obj.innerHTML = `<td style='text-align: left; width: auto;'><img style='width:30%;height:auto' src='/game/photo/${data['id']}'></td><td style='text-align:right'><a href='/game${data['id']}'>${data['name']}</a></td>`
             document.getElementById('table').appendChild(obj);
         };
     });

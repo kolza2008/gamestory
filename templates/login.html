@@ -1,11 +1,8 @@
 {% extends "base.html"%}
 {% block title %}Авторизация{% endblock %}
-{% block content %}
+{% block app_content %}
     <form method="post" class='center'>
         <h1>Авторизация</h1>
-        {% for msg in get_flashed_messages() %}
-        <div class="flash" style='color: red'>{{msg}}</div>
-        {% endfor %}
         <div class='input'>
             <label>Никнейм: </label>
             <input type='text' name='name'>
@@ -14,7 +11,7 @@
             <label>Пароль: </label>
             <input type='password' name='pass'>
         </div>
-        <input type='submit'>
+        <input type='submit' class="btn btn-lg btn-primary btn-block">
         <a href='/register'>Нет аккаунта? Так сделайте его</a>
     </form>
 {% endblock %}
