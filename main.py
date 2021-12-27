@@ -7,6 +7,7 @@ from flask_login import LoginManager, UserMixin, login_required, current_user, l
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '88005553535лучшепозвонитьчемукоготозанимать'
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1000 * 1000
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.db'
 
 lm = LoginManager(app)
@@ -44,13 +45,12 @@ class Game(db.Model):
         }
 
 
-#db.drop_all()
-db.create_all()
+if db.session.query(User).filter_by(nick='admin').count() < 1:
+    user = User(nick='admin', role=1)
+    user.set_password('admin')
+    db.session.add(user)
+    db.session.commit()
 
-user = User(nick='admin', role=1)
-user.set_password('admin')
-db.session.add(user)
-db.session.commit()
 
 @lm.user_loader
 def user_loader(id_):
@@ -73,7 +73,13 @@ def games():
 
 @app.route('/game<id_>')
 def game_page(id_):
+    if request.user_agent.platform == 'Android':
+        return render_template('game_mobile.html', obj=db.session.query(Game).get(id_), cu=current_user)
     return render_template('game.html', obj=db.session.query(Game).get(id_), cu=current_user)
+
+@app.route('/mobile/game<id_>')
+def mobile(id_):
+    return render_template('game_mobile.html', obj=db.session.query(Game).get(id_), cu=current_user)
 
 @app.route('/game/photo/<id_>')
 def game_photo(id_):
@@ -151,4 +157,6 @@ def logout():
     flash("Вы вышли из своего аккаунта")
     return redirect('/login')
 
-app.run()
+if __name__ == '__main__':  
+    db.create_all()
+    app.run()
