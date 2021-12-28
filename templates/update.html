@@ -1,27 +1,24 @@
 {% extends "base.html"%}
-{% block title %}Новая игра{% endblock %}
+{% block title %}Обновление{% endblock %}
 {% block app_content %}
     <form method="post" enctype=multipart/form-data class='center'>
-        <h1>Создание игры</h1>
-        <div>
-            <label>Название игры: </label>
-            <input type="text" name='name' required>
-        </div>
+        <h1>Обновление игры</h1>
         <div>
             <label>Версия игры: </label>
             <input type="text" name='version' id='version'>
         </div>
         <div>
-            <textarea name='desc' placeholder="Описание игры" required>
+            <textarea name='desc' placeholder="Описание игры">
+                {{resource.description}}
             </textarea>
         </div>
         <div>
             <label>Обложка игры</label>
-            <input type='file' name='photo' required>
+            <input type='file' name='photo'>
         </div>
         <div>
             <label>Файл игры</label>
-            <input type='file' name='apk' required>
+            <input type='file' name='apk'>
         </div>
         <input type='submit' class="btn btn-lg btn-primary btn-block">
     </form>
