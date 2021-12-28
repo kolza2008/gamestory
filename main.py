@@ -135,7 +135,7 @@ def new_game():
     if current_user.role != 1: return redirect('/login')
     if request.method == 'POST':
         name = request.form.get('name')
-        version = request.form.get('version').replace('.', '_') or '1_0'
+        version = (request.form.get('version') or '1_0').replace('.', '_')
         photo = request.files['photo']
         apk = request.files['apk']
 
