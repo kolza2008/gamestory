@@ -22,6 +22,9 @@
     </script>
     <noscript><div><img src="https://mc.yandex.ru/watch/87008523" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
     <!-- /Yandex.Metrika counter -->
+    <script type='text/javascript' src='/static/db.js'></script>
+    <script type='text/javascript' src='/static/donwload.js'></script>
+    <script type='text/javascript' src='/static/entrypoint.js'></script>
 {% endblock %}
 
 {% block navbar %}
@@ -33,6 +36,7 @@
     </nav>
     {% if cu.is_authenticated %}
     <a href='/profile/{{cu.id}}' class="p-2 text-dark">Ваш профиль</a>
+    <a href='#' onclick='subscribe()' class="p-2 text-dark">Подписаться на уведомления</a>
     <a href='/logout' class="p-2 text-dark">Выйти</a>
     {% else %}
     <a href="/login" class="p-2 text-dark">Войти</a>
