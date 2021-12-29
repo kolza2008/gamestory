@@ -15,7 +15,7 @@
             var data = games['main'][i]
             var obj = document.createElement('tr') 
             obj.style = 'border-width: 2px 0px; border-color: black;';
-            obj.innerHTML = `<td><a href='/admin/update/${data['id']}'>${data['name']}</a></td><td>${data['version']}</td>`
+            obj.innerHTML = `<td><a href='/admin/{{obj}}/${data['id']}'>${data['name']}</a></td><td>${data['version']}</td>`
             document.getElementById('table').appendChild(obj);
         };
     });

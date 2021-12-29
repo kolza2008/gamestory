@@ -117,7 +117,7 @@ def admin():
 
 @app.route('/admin/update')
 def update_select_game():
-    return render_template('update_select.html', cu=current_user)
+    return render_template('update_select.html', obj='update', cu=current_user)
 
 @app.route('/admin/update/<id_>', methods=['GET', 'POST'])
 def update_game(id_):
