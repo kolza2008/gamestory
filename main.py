@@ -1,3 +1,4 @@
+import os
 import time
 from flask import *
 from flask_sqlalchemy import *
@@ -49,14 +50,16 @@ class Game(db.Model):
             'apk_name': self.apk_name
         }
 
-db.create_all()
+def admin_user():
+    if db.session.query(User).filter_by(nick='admin').count() < 1:
+        user = User(nick='admin', role=1)
+        user.set_password('admin')
+        db.session.add(user)
+        db.session.commit()
 
-if db.session.query(User).filter_by(nick='admin').count() < 1:
-    user = User(nick='admin', role=1)
-    user.set_password('admin')
-    db.session.add(user)
-    db.session.commit()
-
+def set_workspace():
+    if not os.path.exists('photos'): os.mkdir('photos')
+    if not os.path.exists('applications'): os.mkdir('applications')
 
 @lm.user_loader
 def user_loader(id_):
@@ -155,7 +158,7 @@ def new_game():
         flash('Вы успешно создали игру')
         return redirect('/admin')
     return render_template('new_game.html', cu=current_user)
-                
+    
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -192,4 +195,7 @@ def logout():
     return redirect('/login')
 
 if __name__ == '__main__':  
+    set_workspace()
+    db.create_all()
+    admin_user()
     app.run()
