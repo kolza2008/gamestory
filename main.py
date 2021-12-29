@@ -1,5 +1,8 @@
 import os
 import time
+import random
+import string
+import datetime
 from flask import *
 from flask_sqlalchemy import *
 from flask_bootstrap import Bootstrap
@@ -49,6 +52,12 @@ class Game(db.Model):
             'photo_name': self.photo_name,
             'apk_name': self.apk_name
         }
+
+class Token(db.Model):
+    __tablename__ = 'tokens'
+    token = db.Column(db.String(20), primary_key=True)
+    date = db.Column(db.String(15))
+    user = db.Column(db.Integer(), db.ForeignKey('users.id'))
 
 def admin_user():
     if db.session.query(User).filter_by(nick='admin').count() < 1:
@@ -158,7 +167,36 @@ def new_game():
         flash('Вы успешно создали игру')
         return redirect('/admin')
     return render_template('new_game.html', cu=current_user)
-    
+
+@app.route('/api/login/token')
+def token():
+    return ''.join([random.choice(string.ascii_uppercase+string.ascii_lowercase+string.digits) for i in range(random.randint(15, 20))])
+
+@app.route('/api/login', methods=['GET', 'POST'])
+def login_for_apps():
+    if request.method == 'POST':
+        user = User.query.filter_by(nick=request.form.get('name')).first()
+        if not user or not user.check_password(request.form.get('pass')):
+            flash('Неправильный ник или пароль')
+            return redirect('/api/login?token='+request.form.get('token'))
+        try:
+            db.session.add(
+                Token(
+                    token=request.form.get('token'),
+                    date=str(datetime.date.today()),
+                    user = user.id
+                )
+            )
+        except:
+            flash('Ваш токен уже существует')
+            return redirect('/api/login?token='+request.form.get('token'))
+        db.session.commit()
+        return redirect('/buddy_apps')
+    return render_template('login.html', token=request.args.get('token'), cu=current_user)
+
+@app.route('/buddy_apps')
+def buddy():
+    return render_template('buddy.html', cu=current_user)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

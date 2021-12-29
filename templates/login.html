@@ -3,6 +3,7 @@
 {% block app_content %}
     <form method="post" class='center'>
         <h1>Авторизация</h1>
+        <input type='hidden' name='token' value='{{token}}'>
         <div class='input'>
             <label>Никнейм: </label>
             <input type='text' name='name'>
