@@ -172,24 +172,24 @@ def new_game():
 def token():
     return ''.join([random.choice(string.ascii_uppercase+string.ascii_lowercase+string.digits) for i in range(random.randint(15, 20))])
 
-@app.route('/api/login', methods=['GET', 'POST'])
-def login_for_apps():
+@app.route('/api/login/<token>', methods=['GET', 'POST'])
+def login_for_apps(token):
     if request.method == 'POST':
         user = User.query.filter_by(nick=request.form.get('name')).first()
         if not user or not user.check_password(request.form.get('pass')):
             flash('Неправильный ник или пароль')
-            return redirect('/api/login?token='+request.form.get('token'))
+            return redirect(f'/api/login/{token}')
         try:
             db.session.add(
                 Token(
-                    token=request.form.get('token'),
+                    token=token,
                     date=str(datetime.date.today()),
                     user = user.id
                 )
             )
         except:
             flash('Ваш токен уже существует')
-            return redirect('/api/login?token='+request.form.get('token'))
+            return redirect(f'/api/login/{token}')
         db.session.commit()
         return redirect('/buddy_apps')
     return render_template('login.html', token=request.args.get('token'), cu=current_user)
