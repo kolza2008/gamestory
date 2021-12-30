@@ -1,0 +1,15 @@
+{% extends "base.html"%}
+{% block title %}Мой профиль{% endblock %}
+{% block app_content %}
+    <h1>{{cu.nick}}</h1>
+    <details>
+        <summary>Ачивки</summary>
+        <ul>
+            {% for i in achievements %}
+            <li>
+                <a href='/achievement/{{i.id}}'>{{i.name}}</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </details>
+{% endblock %}

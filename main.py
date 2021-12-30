@@ -59,6 +59,24 @@ class Token(db.Model):
     date = db.Column(db.String(15))
     user = db.Column(db.Integer(), db.ForeignKey('users.id'))
 
+class Achievement(db.Model):
+    __tablename__ = 'achievements'
+    id = db.Column(db.Integer(), primary_key=True, nullable=True)
+    name = db.Column(db.String(24))
+    description = db.Column(db.String(64))
+    game = db.Column(db.Integer(), db.ForeignKey('content.id'))
+    def __repr__(self):
+        return f'Ачивка {self.id}'
+    #screenshot = db.Column(db.String(128))
+
+class GetAchieve(db.Model):
+    __tablename__ = 'achieves'
+    id = db.Column(db.Integer(), primary_key=True, nullable=True)
+    user = db.Column(db.Integer(), db.ForeignKey('users.id'))
+    achieve = db.Column(db.Integer(), db.ForeignKey('achievements.id'))
+    def __repr__(self):
+        return f'Пользователь {self.user} получил ачивку {self.achieve}'
+
 def admin_user():
     if db.session.query(User).filter_by(nick='admin').count() < 1:
         user = User(nick='admin', role=1)
@@ -80,6 +98,15 @@ def add_header(response):
     response.headers['Cache-Control'] = 'public, max-age=0'
     return response 
 
+@app.route('/profile')
+def profile():
+    achieves_users = GetAchieve.query.filter(GetAchieve.user == current_user.id).all()
+    print(achieves_users)
+    print(Achievement.query.all())
+    print([j.achieve for j in achieves_users])
+    achieves = [i for i in Achievement.query.all() if i.id in [j.achieve for j in achieves_users]]
+    print(achieves)
+    return render_template('my_profile.html', achievements=achieves, cu=current_user)
 
 @app.route('/')
 def index_page():
@@ -141,6 +168,55 @@ def update_game(id_):
         return redirect('/admin')
     return render_template('update.html', resource=Game.query.get(id_), cu=current_user)
 
+
+@app.route('/admin/achievement')
+def select_game_for_achievement():
+    if current_user.role != 1: return redirect('/login')
+    return render_template('update_select.html', obj='achievement', cu=current_user)
+
+@app.route('/admin/achievement/<id_>', methods=['GET', 'POST'])
+def new_achievement(id_):
+    if current_user.role != 1: return redirect('/login')
+    if request.method == 'POST':
+        name = request.form.get('name')
+        desc = request.form.get('desc')
+        obj = Achievement(
+            name = name,
+            description =  desc,
+            game = Game.query.get(id_).id
+        )
+        db.session.add(obj)
+        db.session.commit()
+        return redirect(f'/achievement/{obj.id}')
+    return render_template('new_achievement.html', cu=current_user)
+
+@app.route('/achievement/<id_>')
+def get_achievement(id_):
+    return render_template('achievement.html', obj=Achievement.query.get(id_), cu=current_user)
+
+@app.route('/game/achievement/<id_>')
+def all_achievements(id_):
+    game = Game.query.get(id_)
+    achieves = Achievement.query.filter(Achievement.game == game.id).all()
+    return render_template('achieves.html', name_game=game.name, achieves=achieves, cu=current_user)
+
+@app.route('/api/get_achievement/<id_>/<token>')
+def throw_achievement(id_, token):
+    tok = Token.query.get(token) 
+    if tok and tok.date == str(datetime.date.today()):
+        user = User.query.get(tok.user)
+        achieve = Achievement.query.get(id_)
+        obj = GetAchieve(
+            user = user.id,
+            achieve = achieve.id
+        )
+        db.session.add(obj)
+        db.session.commit()
+        return '200'
+    else:
+        return Response(status=401)
+
+
 @app.route('/admin/new_game', methods=['GET', 'POST'])
 @login_required
 def new_game():
@@ -193,6 +269,14 @@ def login_for_apps(token):
         db.session.commit()
         return redirect('/buddy_apps')
     return render_template('login.html', token=request.args.get('token'), cu=current_user)
+
+@app.route('/api/user/<token>')
+def get_user(token):
+    obj = Token.query.get(token) 
+    if obj and obj.date == str(datetime.date.today()):
+        return User.query.get(obj.user).nick
+    else:
+        return Response(status=401)
 
 @app.route('/buddy_apps')
 def buddy():

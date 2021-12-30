@@ -1,0 +1,11 @@
+{% extends "base.html"%}
+{% block title %}Достижения в {{name_game}}{% endblock %}
+{% block app_content %}
+    <h1>{{name_game}}</h1>
+    <h3>Достижения</h3>
+    <ul>
+        {% for i in achieves %}
+        <li><a href='/achievement/{{i.id}}'>{{i.name}}</a></li>
+        {% endfor %}
+    </ul>
+{% endblock %}

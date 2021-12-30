@@ -35,7 +35,7 @@
       <a class="p-2 text-dark" href="/">Все игры</a>
     </nav>
     {% if cu.is_authenticated %}
-    <a href='/profile/{{cu.id}}' class="p-2 text-dark">Ваш профиль</a>
+    <a href='/profile' class="p-2 text-dark">Ваш профиль</a>
     <a href='#' onclick='subscribe()' class="p-2 text-dark">Подписаться на уведомления</a>
     <a href='/logout' class="p-2 text-dark">Выйти</a>
     {% else %}

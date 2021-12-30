@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %} Новая ачивка {% endblock %}
+{% block app_content %}
+    <form method="post">
+        <form method="post" enctype=multipart/form-data class='center'>
+            <h1>Создание ачивки</h1>
+            <div>
+                <label>Название: </label>
+                <input type="text" name='name' required>
+            </div>
+            <div>
+                <textarea name='desc' placeholder="Описание игры" required>
+                </textarea>
+            </div>
+            <input type='submit' class="btn btn-lg btn-primary btn-block">
+    </form>
+{% endblock %}
