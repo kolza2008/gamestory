@@ -44,12 +44,12 @@ def mobile(id_):
 
 @app.route('/game/photo/<id_>')
 def game_photo(id_):
-    return send_file(os.path.abspath(f'photos/{Game.query.get(id_).photo_name}'))
+    return send_file(app.config['PATH_TO_APP']+(f'photos/{Game.query.get(id_).photo_name}'))
 
 @app.route('/game/donwload/<id_>')
 def game_apk(id_):
     name = Game.query.get(id_).apk_name
-    return send_file(os.path.abspath(f'applications/{name}'), as_attachment=True, attachment_filename=name)
+    return send_file(app.config['PATH_TO_APP']+(f'applications/{name}'), as_attachment=True, attachment_filename=name)
 
 
 @app.route('/admin')
@@ -74,10 +74,10 @@ def update_game(id_):
         if request.form.get('desc') != source.description: 
             source.description = request.form.get('desc')
         if request.files['photo']: 
-            request.files['photo'].save(os.path.join(os.path.abspath('photos'), f"{source.name}.{request.files['photo'].filename.split('.')[-1]}"))
+            request.files['photo'].save(os.path.join(app.config['PATH_TO_APP']+('photos'), f"{source.name}.{request.files['photo'].filename.split('.')[-1]}"))
             source.photo_name = f"{source.name}.{request.files['photo'].filename.split('.')[-1]}"
         if request.files['apk']: 
-            request.files['apk'].save(os.path.join(os.path.abspath('applications'), f"{source.name.lower().replace(' ', '')}-{source.version}.apk"))
+            request.files['apk'].save(os.path.join(app.config['PATH_TO_APP']+('applications'), f"{source.name.lower().replace(' ', '')}-{source.version}.apk"))
             source.apk_name = f"{source.name.lower().replace(' ', '')}-{source.version}.apk"
         db.session.commit()
         flash('Вы успешно обновили игру')
@@ -146,8 +146,8 @@ def new_game():
         photo_name = f"{name}.{photo.filename.split('.')[-1]}"
         apk_name = f"{name.lower().replace(' ', '')}-{version}.apk"
 
-        photo.save(os.path.join(os.path.abspath('photos'), photo_name))
-        apk.save(os.path.join(os.path.abspath('applications'), apk_name))
+        photo.save(os.path.join(app.config['PATH_TO_APP']+('photos'), photo_name))
+        apk.save(os.path.join(app.config['PATH_TO_APP']+('applications'), apk_name))
 
         game = Game(name=name,
                     timestamp=int(time.time()),
