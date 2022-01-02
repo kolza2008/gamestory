@@ -1,4 +1,5 @@
 let donwload = function(obj){
+    ym(87008523,'reachGoal','donwload_game');
     let db = openRequest.result;
     let new_game_transaction = db.transaction('game_versions', 'readwrite');
     let store = new_game_transaction.objectStore("game_versions");

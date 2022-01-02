@@ -116,9 +116,9 @@ def all_achievements(id_):
     achieves = Achievement.query.filter(Achievement.game == game.id).all()
     return render_template('achieves.html', name_game=game.name, achieves=achieves, cu=current_user)
 
-@app.route('/api/get_achievement/<id_>/<token>')
-def throw_achievement(id_, token):
-    tok = Token.query.get(token) 
+@app.route('/api/get_achievement/<id_>')
+def throw_achievement(id_):
+    tok = Token.query.get(request.args.get('token')) 
     if tok and tok.date == str(datetime.date.today()):
         user = User.query.get(tok.user)
         achieve = Achievement.query.get(id_)
@@ -164,13 +164,13 @@ def new_game():
 def token():
     return ''.join([random.choice(string.ascii_uppercase+string.ascii_lowercase+string.digits) for i in range(random.randint(15, 20))])
 
-@app.route('/api/login/<token>', methods=['GET', 'POST'])
-def login_for_apps(token):
+@app.route('/api/login', methods=['GET', 'POST'])
+def login_for_apps():
     if request.method == 'POST':
         user = User.query.filter_by(nick=request.form.get('name')).first()
         if not user or not user.check_password(request.form.get('pass')):
             flash('Неправильный ник или пароль')
-            return redirect(f'/api/login/{token}')
+            return redirect(f'/api/login?token={request.args.get("token")}')
         try:
             db.session.add(
                 Token(
@@ -181,14 +181,14 @@ def login_for_apps(token):
             )
         except:
             flash('Ваш токен уже существует')
-            return redirect(f'/api/login/{token}')
+            return redirect(f'/api/login?token={request.args.get("token")}')
         db.session.commit()
         return redirect('/buddy_apps')
     return render_template('login.html', token=request.args.get('token'), cu=current_user)
 
-@app.route('/api/user/<token>')
-def get_user(token):
-    obj = Token.query.get(token) 
+@app.route('/api/user')
+def get_user():
+    obj = Token.query.get(request.args.get("token")) 
     if obj and obj.date == str(datetime.date.today()):
         return User.query.get(obj.user).nick
     else:
