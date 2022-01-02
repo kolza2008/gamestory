@@ -6,7 +6,7 @@ from flask_bootstrap import Bootstrap
 
 
 app = Flask(__name__)
-app.config.from_object(os.environ['CONFIG'] or 'config.ConfigOnTest')
+app.config.from_object(os.environ.get('CONFIG') or 'config.ConfigOnTest')
 
 bs = Bootstrap(app)
 db = SQLAlchemy(app)
