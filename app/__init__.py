@@ -13,5 +13,8 @@ db = SQLAlchemy(app)
 lm = LoginManager(app)
 lm.login_view = 'login'
 
+temp_token = {}
+
 from . import views
 from . import models
+from . import apiroutes

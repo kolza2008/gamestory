@@ -43,6 +43,8 @@ class Token(db.Model):
     __tablename__ = 'tokens'
     token = db.Column(db.String(20), primary_key=True)
     date = db.Column(db.String(15))
+    address = db.Column(db.String(15))
+    useragent = db.Column(db.String(128))
     user = db.Column(db.Integer(), db.ForeignKey('users.id'))
 
 class Achievement(db.Model):
@@ -62,3 +64,8 @@ class GetAchieve(db.Model):
     achieve = db.Column(db.Integer(), db.ForeignKey('achievements.id'))
     def __repr__(self):
         return f'Пользователь {self.user} получил ачивку {self.achieve}'
+
+class NotificationSubscription(db.Model):
+    id = db.Column(db.Integer(), primary_key=True, nullable=True)
+    subscriptiondata = db.Column(db.String(512))
+    userdata = db.Column(db.Integer(), db.ForeignKey('users.id'))
