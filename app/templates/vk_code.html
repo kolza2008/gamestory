@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %}Подождите...{% endblock %}
+{% block app_content %}
+    <h1>Подождите...</h1>
+    <script>
+        window.location.replace(window.location.href.replace('#', '?'))
+        console.log(window.location);
+    </script>
+{% endblock %}

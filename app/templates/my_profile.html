@@ -1,7 +1,7 @@
 {% extends "base.html"%}
 {% block title %}Мой профиль{% endblock %}
 {% block app_content %}
-    <h1>{{cu.nick}}</h1>
+    <h1>{{current_user.nick}}</h1>
     <details>
         <summary>Ачивки</summary>
         <ul>
@@ -10,6 +10,12 @@
                 <a href='/achievement/{{i.id}}'>{{i.name}}</a>
             </li>
             {% endfor %}
+        </ul>
+    </details>
+    <details>
+        <summary>Взаимодействие с аккаунтом</summary>
+        <ul>
+            <li><a href='{{VK_URL()}}'>Привязать учетную запись ВК</a></li>
         </ul>
     </details>
 {% endblock %}

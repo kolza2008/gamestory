@@ -8,6 +8,7 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True, nullable=True)
     nick = db.Column(db.String(64), nullable=False, unique=True)
     password_hash = db.Column(db.String(365))
+    vk_id = db.Column(db.Integer(), default=(-1))
     role = db.Column(db.Integer(), default=0)
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)

@@ -1,7 +1,7 @@
 import os
 import time
 from flask import *
-from app import app
+from app import app, temp_codes
 from app.utils import *
 from app.models import *
 from flask_login import login_required, current_user, login_user, logout_user
@@ -198,3 +198,21 @@ def logout():
     logout_user()
     flash("Вы вышли из своего аккаунта")
     return redirect('/login')
+
+@app.route('/vk_entrypoint')
+def vk_oauth_handler():
+    if request.args:
+        user = User.query.filter_by(vk_id=request.args.get('user_id')).first()
+        if user:
+            temp_codes.update({user.id: request.args.get('access_token')})
+            login_user(user)
+            return redirect('/')
+        else:
+            if current_user:
+                current_user.vk_id = request.args.get('user_id')
+                db.session.commit()
+                flash('Мы привязали этот ВК к вашему аккаунту')
+                return redirect('/profile')
+            flash('Аккаунта, привязанного к этой учетной записи ВК, не существует')
+            return redirect('/register')
+    return render_template('vk_code.html')
