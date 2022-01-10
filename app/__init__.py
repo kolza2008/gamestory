@@ -14,6 +14,7 @@ lm = LoginManager(app)
 lm.login_view = 'login'
 
 temp_token = {}
+temp_codes = {}
 
 from . import views
 from . import models

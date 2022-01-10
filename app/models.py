@@ -70,3 +70,10 @@ class NotificationSubscription(db.Model):
     id = db.Column(db.Integer(), primary_key=True, nullable=True)
     subscriptiondata = db.Column(db.String(512))
     userdata = db.Column(db.Integer(), db.ForeignKey('users.id'))
+
+class GameDictonary(db.Model):
+    id = db.Column(db.Integer(), primary_key=True, nullable=True)
+    game = db.Column(db.Integer(), db.ForeignKey('content.id'))
+    user = db.Column(db.Integer(), db.ForeignKey('users.id'))
+    key = db.Column(db.String(64))
+    value = db.Column(db.String(64))

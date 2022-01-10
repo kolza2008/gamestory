@@ -61,3 +61,27 @@ def throw_achievement(id_, token):
     )
     db.session.add(obj)
     db.session.commit()
+
+@app.route('/api/set_data/<game>/<key>/<value>')
+@token_required
+def set_data_for_user(game, key, value, token):
+    if not Game.query.get(game): return 'none'
+    user = User.query.get(token.user)
+    if db.session.query(GameDictonary).filter_by(game=game, user=user.id, key=key).count() < 1:
+        row = GameDictonary(user=user.id,
+                            game=game,
+                            key=key,
+                            value=value)
+        db.session.add(row)   
+    else:
+         row = db.session.query(GameDictonary).filter_by(game=game, user=user.id, key=key).first()
+         row.value = value
+    db.session.commit()
+    return 'ok'
+
+@app.route('/api/get_data/<game>/<key>')
+@token_required
+def get_data_for_user(game, key, token):
+    user = User.query.get(token.user)
+    row = db.session.query(GameDictonary).filter_by(game=game, user=user.id, key=key).first()
+    return row.value if row else 'none'

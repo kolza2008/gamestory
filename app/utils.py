@@ -47,8 +47,10 @@ def token_required(func):
         if tok and tok.date == str(datetime.date.today()) and tok.address == request.remote_addr and tok.useragent == str(request.user_agent):
             try:
                 return func(*args, **kwargs, token=tok)
-            except:
+            except TypeError:
                 return func(*args, **kwargs)
+            except Exception as ex:
+                print(ex)
         else:
             return Response(status=401)
     decor.__name__ = func.__name__
@@ -60,5 +62,7 @@ def generate_token():
 
 
 @app.context_processor
-def notification_key_context():
-    return {'notify_key': app.config['NOTIFICATION_KEY']}
+def custom_context():
+    def vk_oauth_url():
+        return f'https://oauth.vk.com/authorize?client_id={app.config["VK_ID"]}&redirect_uri={app.config["APP_URL"]}/vk_entrypoint&display=page&scope={app.config["VK_SCOPE"]}&response_type=token'
+    return {'notify_key': app.config['NOTIFICATION_KEY'], 'VK_URL':vk_oauth_url}

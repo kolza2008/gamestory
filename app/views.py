@@ -37,7 +37,7 @@ def games():
 
 @app.route('/game<id_>')
 def game_page(id_):
-    if'Android' in request.user_agent:
+    if'Android' in str(request.user_agent):
         return render_template('game_mobile.html', obj=db.session.query(Game).get(id_))
     return render_template('game.html', obj=db.session.query(Game).get(id_))
 
@@ -209,10 +209,13 @@ def vk_oauth_handler():
             return redirect('/')
         else:
             if current_user:
-                current_user.vk_id = request.args.get('user_id')
-                db.session.commit()
-                flash('Мы привязали этот ВК к вашему аккаунту')
-                return redirect('/profile')
+                try:
+                    current_user.vk_id = request.args.get('user_id')
+                    db.session.commit()
+                    flash('Мы привязали этот ВК к вашему аккаунту')
+                    return redirect('/profile')
+                except:
+                    pass
             flash('Аккаунта, привязанного к этой учетной записи ВК, не существует')
             return redirect('/register')
     return render_template('vk_code.html')
