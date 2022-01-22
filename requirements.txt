@@ -4,3 +4,4 @@ pywebpush==1.14.0
 Flask-Bootstrap==3.3.7.1
 Flask-Login==0.5.0
 Flask-SQLAlchemy==2.5.1
+Flask_Migrate==3.1.0
