@@ -20,4 +20,6 @@ class ConfigOnServer(ConfigOnTest):
     APP_URL = 'kolza2008.pythonanywhere.com'
     MAX_CONTENT_LENGHT = 100 * 1024 * 1024
     PATH_TO_APP = "/home/kolza2008/mysite/"
+    SQLALCHEMY_POOL_TIMEOUT = 20
+    SQLALCHEMY_POOL_RECYCLE = 299
     SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://kolza2008:afganistan1457@kolza2008.mysql.pythonanywhere-services.com/kolza2008$main'
