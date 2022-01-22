@@ -30,16 +30,18 @@ def push_notification(user_id, data):
                   extra.errno,
                   extra.message)
 
-def admin_required(func):
-    @login_required
-    def decor(*args, **kwargs):
-        if current_user.role != 1: 
-            flash('Эта страница только для администраторов')
-            return redirect('/login')
-        else:
-            return func(*args, **kwargs)
-    decor.__name__ = func.__name__
-    return decor
+def admin_required(roletype=1):
+    def decor_factory(func):
+        @login_required
+        def decor(*args, **kwargs):
+            if current_user.role < roletype: 
+                flash('Эта страница только для администраторов')
+                return redirect('/login')
+            else:
+                return func(*args, **kwargs)
+        decor.__name__ = func.__name__
+        return decor
+    return decor_factory
 
 def token_required(func):
     def decor(*args, **kwargs):

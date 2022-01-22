@@ -4,6 +4,12 @@ class ConfigOnTest:
     APP_URL = '127.0.0.1:5000'
     VK_SCOPE = 'friends'
     ADMIN_EMAIL = 'kolza2008@bk.ru'
+    MAIL_PASSWORD = 'Da_i_Gen1y'
+    MAIL_SERVER = 'smtp.googlemail.com'
+    MAIL_PORT = 587
+    MAIL_USE_TLS = True
+    MAIL_USERNAME = 'imperativgames@gmail.com'
+    MAIL_DEFAULT_SENDER = 'imperativgames@gmail.com'  
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024
     SQLALCHEMY_DATABASE_URI = 'sqlite:///db.db'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
@@ -13,5 +19,5 @@ class ConfigOnTest:
 class ConfigOnServer(ConfigOnTest):
     APP_URL = 'kolza2008.pythonanywhere.com'
     MAX_CONTENT_LENGHT = 100 * 1024 * 1024
-    PATH_TO_APP = "/home/kolza2008/mysite/templates/"
+    PATH_TO_APP = "/home/kolza2008/mysite/"
     SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://kolza2008:afganistan1457@kolza2008.mysql.pythonanywhere-services.com/kolza2008$main'

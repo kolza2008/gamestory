@@ -12,10 +12,10 @@ def add_header(response):
     response.headers['Cache-Control'] = 'public, max-age=0'
     return response 
 
-@app.route('/send')
+"""@app.route('/send')
 def send():
     for i in User.query.all():
-        push_notification(i.id, "Biblia")
+        push_notification(i.id, "Biblia")"""
 
 @app.route('/profile')
 def profile():
@@ -34,6 +34,10 @@ def service_worker():
 @app.route('/api/games')
 def games():
     return jsonify({'main':[i.json for i in Game.query.all()]})
+
+@app.route('/api/users')
+def users():
+    return jsonify({'main':[i.json for i in User.query.all()]})
 
 @app.route('/game<id_>')
 def game_page(id_):
@@ -69,22 +73,54 @@ def subscribe():
     except:
         return 'neok'
 
-@app.route('/subscribe_key')
-def key():
-    return app.config['NOTIFICATION_KEY']
-
+@app.route('/send')
+def test():
+    for i in NotificationSubscription.query.all():
+        user_subscription = NotificationSubscription.query.filter_by(userdata=i.userdata).first()
+        try:
+            webpush(
+                subscription_info=json.loads(user_subscription.subscriptiondata),
+                data="test",
+                vapid_private_key='./private_key.pem',
+                vapid_claims={
+                            'sub': f'mailto:{app.config["ADMIN_EMAIL"]}',
+                }
+            )
+        except WebPushException as ex:
+            print('I\'m sorry, Dave, but I can\'t do that: {}'.format(repr(ex)))
+            print(ex)
+            # Mozilla returns additional information in the body of the response.
+            if ex.response and ex.response.json():
+                extra = ex.response.json()
+                print('Remote service replied with a {}:{}, {}',
+                    extra.code,
+                    extra.errno,
+                    extra.message)
 
 @app.route('/admin')
-@admin_required
+@admin_required()
 def admin():
     return render_template('admin.html')
+
+@app.route('/admin/set_admin')
+@admin_required()
+def select_set_admin():
+    return render_template('set_admin.html')
+
+@app.route('/admin/set_admin/<op_type>/<id_>')
+@admin_required(roletype=2)
+def set_admin(op_type, id_):
+    user = User.query.get(id_)
+    user.role = {'uns':0, 'adm':1, 'sup':2}[op_type]
+    flash(f'Вы сделали пользователя {user.nick} счастливее')
+    return redirect('/admin')
 
 @app.route('/admin/update')
 def update_select_game():
     return render_template('update_select.html', obj='update')
 
 @app.route('/admin/update/<id_>', methods=['GET', 'POST'])
-@admin_required
+@admin_required()
 def update_game(id_):
     if request.method == 'POST':
         source = Game.query.get(id_)
@@ -107,12 +143,12 @@ def update_game(id_):
 
 
 @app.route('/admin/achievement')
-@admin_required
+@admin_required()
 def select_game_for_achievement():
     return render_template('update_select.html', obj='achievement')
 
 @app.route('/admin/achievement/<id_>', methods=['GET', 'POST'])
-@admin_required
+@admin_required()
 def new_achievement(id_):
     if request.method == 'POST':
         name = request.form.get('name')
@@ -137,9 +173,8 @@ def all_achievements(id_):
     achieves = Achievement.query.filter(Achievement.game == game.id).all()
     return render_template('achieves.html', name_game=game.name, achieves=achieves)
 
-
 @app.route('/admin/new_game', methods=['GET', 'POST'])
-@admin_required
+@admin_required()
 def new_game():
     if request.method == 'POST':
         name = request.form.get('name')
@@ -164,6 +199,19 @@ def new_game():
         return redirect('/admin')
     return render_template('new_game.html')
 
+@app.route('/admin/delete')
+@admin_required(2)
+def select_delete_game():
+    return render_template('update_select.html', obj='delete')
+
+@app.route('/admin/delete/<id_>')
+@admin_required(2)
+def delete_game(id_):
+    game = Game.query.get(id_)
+    db.session.delete(game)
+    db.session.commit()
+    flash('Игра удалена')
+    return redirect('/admin')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -184,7 +232,7 @@ def register():
         if User.query.filter_by(nick=request.form.get('name')).first():
             flash('Такой пользователь уже существует')
             return redirect('/register')
-        user = User(nick=request.form.get('name'))
+        user = User(nick=request.form.get('name'), email=request.form.get('email'))
         user.set_password(request.form.get('pass'))
         db.session.add(user)
         db.session.commit()

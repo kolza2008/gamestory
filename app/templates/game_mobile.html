@@ -2,7 +2,7 @@
 {% block title %}{{obj.name}}{% endblock %}
 {% block app_content %}
     <h1>{{obj.name}}</h1> </br>
-    <img src='/game/photo/{{obj.id}}' style='width:30%;height:auto'></br>
+    <img src='/game/photo/{{obj.id}}' style='width:80%;height:auto'></br>
     <a class="btn btn-lg btn-primary btn-block" href='/game/donwload/{{obj.id}}' download>Скачать</a>
     <p>{{obj.description}}</p>
 {% endblock %}

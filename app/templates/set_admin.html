@@ -1,0 +1,29 @@
+{% extends "base.html"%}
+{% block title %}Обновление игр{% endblock %}
+{% block app_content %}
+<table id='table' style='width:100%'>
+</table>
+<script>
+    async function get_users(){
+        return await fetch('/api/users').then(response => response.json());
+    };
+    var users = get_users()
+    users.then(function(users){
+        for(let i = 0; i!=users['main'].length;i++){
+            var data = users['main'][i]
+            var el =$(`<tr style='border-width: 2px 0px; border-color: black;'>
+                           <td>${data['username']}</td>
+                           <td><input type='checkbox' class='check_admin' id='${data['id']} ${(data['is_admin'] ? 'checked' : '')}></td>
+                       </tr>`)
+            console.log(`<tr style='border-width: 2px 0px; border-color: black;'>
+                           <td>${data['username']}</td>
+                           <td><input type='checkbox' class='check_admin' id='${data['id']} ${(data['is_admin'] ? 'checked' : '')}></td>
+                         </tr>`)
+            $('#table').append(el)
+            $(".check_admin").on('click', function(event) {
+                console.log(el.is(':checked'))
+            });
+        };
+    })
+</script>
+{% endblock %}
