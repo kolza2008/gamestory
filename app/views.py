@@ -192,7 +192,9 @@ def new_game():
                     timestamp=int(time.time()),
                     description=request.form.get('desc').replace('\n', '</br>'),
                     photo_name=photo_name,
-                    apk_name=apk_name)
+                    apk_name=apk_name,
+                    secret_value_under=random.randint(0, 1000000),
+                    secret_value_top=random.randint(0,1000000))
         db.session.add(game)
         db.session.commit()
         flash('Вы успешно создали игру')

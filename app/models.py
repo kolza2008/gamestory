@@ -1,3 +1,4 @@
+from msilib import sequence
 from app import db, lm
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -36,6 +37,12 @@ class Game(db.Model):
     description = db.Column(db.String(365), nullable=False)
     photo_name = db.Column(db.String(20), nullable=False)
     apk_name = db.Column(db.String(20), nullable=False)
+
+    secret_value_under = db.Column(db.Integer())
+    secret_value_top = db.Column(db.Integer())
+    @property
+    def secret_product(self):
+        return self.secret_value_under * self.secret_value_top
     @property
     def json(self):
         return {
@@ -55,6 +62,14 @@ class Token(db.Model):
     address = db.Column(db.String(15))
     useragent = db.Column(db.String(128))
     user = db.Column(db.Integer(), db.ForeignKey('users.id'))
+    game = db.Column(db.Integer(), db.ForeignKey('content.id'))
+    sequence_seed = db.Column(db.Integer())
+    secret_key = db.Column(db.Integer())
+    sequence_member = db.Column(db.Integer(), default=1)
+    @property
+    def secret_keys(self):
+        game = Game.query.get(self.game)
+        return (game.secret_value_under, game.secret_value_top, self.secret_key)
 
 class Achievement(db.Model):
     __tablename__ = 'achievements'

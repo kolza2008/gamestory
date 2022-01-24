@@ -5,10 +5,18 @@ from app.models import *
 from app import app, temp_token
 
 
-@app.route('/api/login/token')
-def _token():
-    token = generate_token()
-    temp_token[token] = str(request.user_agent)
+@app.route('/api/login/token/<int:secret_value>')
+def _token(secret_value):
+    print(secret_value, type(secret_value))
+    for i in Game.query.all():
+        print(i.secret_product, type(i.secret_product))
+        if i.secret_product == secret_value:
+            game_for = i
+            break
+    #game_for = Game.query.filter(Game.secret_product == int(secret_value)).first()
+    if not game_for: return '401'
+    token = str(game_for.secret_value_under*random.randint(0, 1000)+game_for.secret_value_top) + '\n' + generate_token()
+    temp_token[token.replace('\n', ':')] = (str(request.user_agent), game_for)
     return token
 
 @app.route('/api/login', methods=['GET', 'POST'])
@@ -22,14 +30,18 @@ def login_for_apps():
             token = request.args.get("token")
             db.session.add(
                 Token(
-                    token = token,
-                    useragent = temp_token[token],
+                    token = token.split(':')[1],
+                    sequence_seed = int(token.split(':')[0]),
+                    useragent = temp_token[token][0],
                     address = request.remote_addr,
                     date = str(datetime.date.today()),
-                    user = user.id
+                    user = user.id,
+                    game = temp_token[token][1].id,
+                    secret_key = (int(token.split(':')[0]) - temp_token[token][1].secret_value_top) // temp_token[token][1].secret_value_under
                 )
             )
         except KeyError:
+            print(temp_token)
             flash('Токен сгенерирован не на странице сервера')
             return redirect(f'/api/login?token={request.args.get("token")}')
         except Exception as ex:

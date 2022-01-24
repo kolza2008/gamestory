@@ -45,14 +45,23 @@ def admin_required(roletype=1):
 
 def token_required(func):
     def decor(*args, **kwargs):
-        tok = Token.query.get(request.args.get('token')) 
-        if tok and tok.date == str(datetime.date.today()) and tok.address == request.remote_addr and tok.useragent == str(request.user_agent):
+        original = request.args.get('token').split(':')
+        tok = Token.query.get(original[1])
+        valid_is = tok and tok.date == str(datetime.date.today())
+        valid_is = valid_is and tok.address == request.remote_addr
+        valid_is = valid_is and tok.useragent == str(request.user_agent)
+        valid_is = valid_is and (int(original[0]) == sequence_getter(tok.sequence_seed, tok.sequence_member, *tok.secret_keys))
+        if valid_is:
             try:
-                return func(*args, **kwargs, token=tok)
+                res = func(*args, **kwargs, token=tok)
+                tok.sequence_member += 1
+                db.session.commit()
+                return res
             except TypeError:
                 return func(*args, **kwargs)
             except Exception as ex:
                 print(ex)
+            
         else:
             return Response(status=401)
     decor.__name__ = func.__name__
@@ -68,3 +77,12 @@ def custom_context():
     def vk_oauth_url():
         return f'https://oauth.vk.com/authorize?client_id={app.config["VK_ID"]}&redirect_uri={app.config["APP_URL"]}/vk_entrypoint&display=page&scope={app.config["VK_SCOPE"]}&response_type=token'
     return {'notify_key': app.config['NOTIFICATION_KEY'], 'VK_URL':vk_oauth_url}
+
+def sequence_getter(seed, member, *secret_keys):
+    res = seed
+    for i in range(1, member):
+        if i % 2 == 0:
+            res = res * secret_keys[0] // secret_keys[1] - secret_keys[2]
+        else:
+            res = res * secret_keys[0] // secret_keys[1] + secret_keys[2]
+    return res
