@@ -59,12 +59,12 @@ def buddy():
 
 @app.route('/api/user')
 @token_required
-def get_user(token):
+def get_user(game, token):
     return User.query.get(token.user).nick
 
 @app.route('/api/get_achievement/<id_>')
 @token_required
-def throw_achievement(id_, token):
+def throw_achievement(id_, game, token):
     user = User.query.get(token.user)
     achieve = Achievement.query.get(id_)
     obj = GetAchieve(
@@ -74,7 +74,7 @@ def throw_achievement(id_, token):
     db.session.add(obj)
     db.session.commit()
 
-@app.route('/api/set_data/<game>/<key>/<value>')
+@app.route('/api/set_data/<key>/<value>')
 @token_required
 def set_data_for_user(game, key, value, token):
     if not Game.query.get(game): return 'none'
@@ -91,9 +91,9 @@ def set_data_for_user(game, key, value, token):
     db.session.commit()
     return 'ok'
 
-@app.route('/api/get_data/<game>/<key>')
+@app.route('/api/get_data/<key>')
 @token_required
-def get_data_for_user(game, key, token):
+def get_data_for_user(key, game, token):
     user = User.query.get(token.user)
     row = db.session.query(GameDictonary).filter_by(game=game, user=user.id, key=key).first()
     return row.value if row else 'none'

@@ -198,7 +198,7 @@ def new_game():
         db.session.add(game)
         db.session.commit()
         flash('Вы успешно создали игру')
-        return redirect('/admin')
+        return render_template('show_codes.html', code_first=game.secret_value_under, code_second=game.secret_value_top)#redirect('/admin')
     return render_template('new_game.html')
 
 @app.route('/admin/delete')

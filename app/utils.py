@@ -53,12 +53,15 @@ def token_required(func):
         valid_is = valid_is and (int(original[0]) == sequence_getter(tok.sequence_seed, tok.sequence_member, *tok.secret_keys))
         if valid_is:
             try:
-                res = func(*args, **kwargs, token=tok)
+                res = func(*args, **kwargs, game=tok.game, token=tok)
                 tok.sequence_member += 1
                 db.session.commit()
                 return res
             except TypeError:
-                return func(*args, **kwargs)
+                res =  func(*args, **kwargs)
+                tok.sequence_member += 1
+                db.session.commit()
+                return res
             except Exception as ex:
                 print(ex)
             
