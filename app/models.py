@@ -60,8 +60,8 @@ class Token(db.Model):
     date = db.Column(db.String(15))
     address = db.Column(db.String(15))
     useragent = db.Column(db.String(128))
-    user = db.Column(db.Integer(), db.ForeignKey('users.id'))
-    game = db.Column(db.Integer(), db.ForeignKey('content.id'))
+    user = db.Column(db.Integer(), db.ForeignKey('users.id', ondelete='CASCADE'))
+    game = db.Column(db.Integer(), db.ForeignKey('content.id', ondelete='CASCADE'))
     sequence_seed = db.Column(db.Integer())
     secret_key = db.Column(db.Integer())
     sequence_member = db.Column(db.Integer(), default=1)
@@ -75,7 +75,7 @@ class Achievement(db.Model):
     id = db.Column(db.Integer(), primary_key=True, nullable=True)
     name = db.Column(db.String(24))
     description = db.Column(db.String(64))
-    game = db.Column(db.Integer(), db.ForeignKey('content.id'))
+    game = db.Column(db.Integer(), db.ForeignKey('content.id', ondelete='CASCADE'))
     def __repr__(self):
         return f'Ачивка {self.id}'
     #screenshot = db.Column(db.String(128))
@@ -84,18 +84,18 @@ class GetAchieve(db.Model):
     __tablename__ = 'achieves'
     id = db.Column(db.Integer(), primary_key=True, nullable=True)
     user = db.Column(db.Integer(), db.ForeignKey('users.id'))
-    achieve = db.Column(db.Integer(), db.ForeignKey('achievements.id'))
+    achieve = db.Column(db.Integer(), db.ForeignKey('achievements.id', ondelete='CASCADE'))
     def __repr__(self):
         return f'Пользователь {self.user} получил ачивку {self.achieve}'
 
 class NotificationSubscription(db.Model):
     id = db.Column(db.Integer(), primary_key=True, nullable=True)
     subscriptiondata = db.Column(db.String(512))
-    userdata = db.Column(db.Integer(), db.ForeignKey('users.id'))
+    userdata = db.Column(db.Integer(), db.ForeignKey('users.id', ondelete='CASCADE'))
 
 class GameDictonary(db.Model):
     id = db.Column(db.Integer(), primary_key=True, nullable=True)
-    game = db.Column(db.Integer(), db.ForeignKey('content.id'))
-    user = db.Column(db.Integer(), db.ForeignKey('users.id'))
+    game = db.Column(db.Integer(), db.ForeignKey('content.id', ondelete='CASCADE'))
+    user = db.Column(db.Integer(), db.ForeignKey('users.id', ondelete='CASCADE'))
     key = db.Column(db.String(64))
     value = db.Column(db.String(64))

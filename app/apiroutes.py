@@ -67,12 +67,14 @@ def get_user(game, token):
 def throw_achievement(id_, game, token):
     user = User.query.get(token.user)
     achieve = Achievement.query.get(id_)
+    if achieve.game != game: return Response(401)
     obj = GetAchieve(
         user = user.id,
         achieve = achieve.id
     )
     db.session.add(obj)
     db.session.commit()
+    return 'ok'
 
 @app.route('/api/set_data/<key>/<value>')
 @token_required
