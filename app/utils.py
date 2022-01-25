@@ -84,5 +84,5 @@ def custom_context():
 def sequence_getter(seed, member, *secret_keys):
     res = seed
     for i in range(1, member):
-        res = res * secret_keys[0] // secret_keys[1] - ((secret_keys[2] * i % 2) + 1)
+        res = res * secret_keys[0] // secret_keys[1] - secret_keys[2]
     return res

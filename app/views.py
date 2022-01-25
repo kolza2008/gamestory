@@ -262,14 +262,6 @@ def vk_oauth_handler():
             login_user(user)
             return redirect('/')
         else:
-            if current_user:
-                try:
-                    current_user.vk_id = request.args.get('user_id')
-                    db.session.commit()
-                    flash('Мы привязали этот ВК к вашему аккаунту')
-                    return redirect('/profile')
-                except:
-                    pass
             flash('Аккаунта, привязанного к этой учетной записи ВК, не существует')
             return redirect('/register')
     return render_template('vk_code.html')
