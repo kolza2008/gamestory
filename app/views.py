@@ -97,6 +97,10 @@ def test():
                     extra.errno,
                     extra.message)
 
+@app.route("/docs")
+def docs():
+    return render_template('docs.html')
+
 @app.route('/admin')
 @admin_required()
 def admin():
