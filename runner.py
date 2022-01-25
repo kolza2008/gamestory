@@ -17,10 +17,12 @@ def set_workspace():
     if not os.path.exists('photos'): os.mkdir('photos')
     if not os.path.exists('applications'): os.mkdir('applications')
 
-for i in Game.query.all():
-    print(i.name, i.secret_product)
+def print_products():
+    for i in Game.query.all():
+        print(i.name, i.secret_product)
 
 set_workspace()
 db.create_all()
 admin_user()
+print_products()
 app.run()
