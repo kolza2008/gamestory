@@ -1,7 +1,7 @@
-import sqlite3
+from app.models import Token
+from app import db
 
-conn = sqlite3.connect('db.db')
-cur = conn.cursor()
+for i in Token.query.all():
+    db.session.delete(i)
 
-cur.execute('DELETE *  FROM tokens')
-cur.execute()
+db.session.commit()
