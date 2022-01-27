@@ -31,14 +31,6 @@ def index_page():
 def service_worker():
     return send_file(app.config['PATH_TO_APP']+('app/static/sw.js'), mimetype='application/javascript')
 
-@app.route('/api/games')
-def games():
-    return jsonify({'main':[i.json for i in Game.query.all()]})
-
-@app.route('/api/users')
-def users():
-    return jsonify({'main':[i.json for i in User.query.all()]})
-
 @app.route('/game<id_>')
 def game_page(id_):
     if'Android' in str(request.user_agent):
@@ -101,6 +93,33 @@ def test():
 def docs():
     return render_template('docs.html')
 
+@app.route("/friend/add/<int:id_>")
+@login_required
+def add_friend(id_):
+    if id_ == current_user.id:
+        return Response(status=412)
+    elif Friend.query.filter((Friend.user_1 == current_user.id or Friend.user_2 == current_user.id) and (Friend.user_1 == id_ or Friend.user_2 == id_)).first(): #если дружба между ними уже есть
+        return Response(status=409) #вернуть ошибку что состояние сервера уже это включает
+    elif FriendRequest.query.filter(FriendRequest.waiter==current_user.id and FriendRequest.decisiver==id_).first(): #если ровно такой же запрос есть
+        return Response(status=409) #вернуть ошибку что сервер уже отправил это запрос
+    elif FriendRequest.query.filter(FriendRequest.waiter==id_ and FriendRequest.decisiver==current_user.id).first(): #если был запрос на дружбу от того кого мы хотим добавить в друзья
+        db.session.delete(FriendRequest.query.filter(FriendRequest.waiter==id_ and FriendRequest.decisiver==current_user.id).first()) #удалить запрос на дружбу
+        db.session.add(Friend(user_1=id_, user_2=current_user.id)) #создать дружбу между принявшим заявку и отправившим
+    else:
+        db.session.add(FriendRequest(waiter=current_user.id, decisiver=id_)) #создать запрос на дружбу
+    db.session.commit()
+    return '1'
+
+@app.route('/friend/notify')
+def notifications():
+    return render_template('notifications.html')
+
+@app.route('/api/notifications_friends')
+@login_required
+def friend_requests():
+    print(current_user.id)
+    return jsonify([i.json() for i in FriendRequest.query.filter_by(decisiver=current_user.id).all()])
+
 @app.route('/admin')
 @admin_required()
 def admin():
@@ -132,7 +151,7 @@ def update_game(id_):
             flash('Такая версия уже была. Смените')
             return redirect(f'/admin/update/{source.id}')
         source.version = request.form.get('version')
-        if request.form.get('desc') != source.description: 
+        if request.form.get('desc') and request.form.get('desc') != source.description: 
             source.description = request.form.get('desc')
         if request.files['photo']: 
             request.files['photo'].save(os.path.join(app.config['PATH_TO_APP']+('photos'), f"{source.name}.{request.files['photo'].filename.split('.')[-1]}"))
@@ -215,6 +234,8 @@ def select_delete_game():
 def delete_game(id_):
     game = Game.query.get(id_)
     db.session.delete(game)
+    os.remove(os.path.join(app.config['PATH_TO_APP']+('photos'), game.photo_name))
+    os.remove(os.path.join(app.config['PATH_TO_APP']+('applications'), game.apk_name))
     db.session.commit()
     flash('Игра удалена')
     return redirect('/admin')

@@ -4,6 +4,17 @@ from app.utils import *
 from app.models import *
 from app import app, temp_token
 
+@app.route('/api/games')
+def games():
+    return jsonify({'main':[i.json for i in Game.query.all()]})
+
+@app.route('/api/users')
+def users():
+    return jsonify({'main':[i.json for i in User.query.all()]})
+
+@app.route('/api/usernames')
+def usernames():
+    return jsonify({i.id: i.nick for i in User.query.all()})
 
 @app.route('/api/login/token/<int:secret_value>')
 def _token(secret_value):
@@ -52,6 +63,11 @@ def login_for_apps():
         return redirect('/buddy_apps')
     return render_template('login.html', token=request.args.get('token'))
 
+@app.route('/api/check_valid/<token>')
+def check_valid_token(token):
+    token_from_db = Token.query.filter_by(token=token).first
+    return '1' if not (token_from_db == None) else '0'
+
 @app.route('/buddy_apps')
 def buddy():
     return render_template('buddy.html')
@@ -99,3 +115,10 @@ def get_data_for_user(key, game, token):
     user = User.query.get(token.user)
     row = db.session.query(GameDictonary).filter_by(game=game, user=user.id, key=key).first()
     return row.value if row else 'none'
+
+@app.route('/api/friends')
+@token_required
+def get_friends(game, token):
+    user = User.query.get(token.user)
+    friends = list(*[User.query.get(i.user_2).nick for i in Friend.query.filter_by(user_1 = user.id).all()], *[User.query.get(i.user_1).nick for i in Friend.query.filter_by(user_2 = user.id).all()])
+    return '\n'.join(friends)

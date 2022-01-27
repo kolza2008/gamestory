@@ -99,3 +99,21 @@ class GameDictonary(db.Model):
     user = db.Column(db.Integer(), db.ForeignKey('users.id', ondelete='CASCADE'))
     key = db.Column(db.String(64))
     value = db.Column(db.String(64))
+
+class Friend(db.Model):
+    __tablename__ = "friends"
+    id = db.Column(db.Integer(), primary_key=True, nullable=True)
+    user_1 = db.Column(db.Integer(), db.ForeignKey('users.id', ondelete='CASCADE'))
+    user_2 = db.Column(db.Integer(), db.ForeignKey('users.id', ondelete='CASCADE'))
+
+class FriendRequest(db.Model):
+    __tablename__ = "friendrequests"
+    id = db.Column(db.Integer(), primary_key=True, nullable=True)
+    waiter = db.Column(db.Integer(), db.ForeignKey('users.id', ondelete='CASCADE'))
+    decisiver = db.Column(db.Integer(), db.ForeignKey('users.id', ondelete='CASCADE'))
+    def json(self):
+        return {
+            'id': self.id,
+            'waiter': self.waiter,
+            'decisiver': self.decisiver
+        }

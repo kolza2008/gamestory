@@ -1,0 +1,28 @@
+{% extends "base.html"%}
+{% block title %}Уведомления{% endblock %}
+{% block app_content %}
+<div id="content">
+</div>
+<script>
+    var elem_to = document.getElementById('content')
+    var data = []
+    var names = {}
+    $.get('/api/notifications_friends', function(info){
+        data=info
+    });
+    $.get('/api/usernames', function(info){
+        names=info
+    });
+    for(let i=0;i!=data.length;i++){
+        var data_ = data[i]
+        var elem = document.createElement("p");
+        elem.innerHTML = `К вам в друзья просится ${names[data_['waiter']]}. <a onclick="add_friend(${data_['waiter']})">Принять</a>`
+        elem_to.append(elem)
+    }
+    function add_friend(id){
+        $.get(`/friend/add/${id}`, function(info){
+            if(info != 1){console.log(info)}
+        })
+    }
+</script>
+{% endblock %}

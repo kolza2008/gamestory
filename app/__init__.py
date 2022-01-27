@@ -23,5 +23,7 @@ temp_token = {}
 temp_codes = {}
 
 from . import views
+from . import errors
 from . import models
 from . import apiroutes
+
