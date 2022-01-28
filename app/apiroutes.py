@@ -16,6 +16,10 @@ def users():
 def usernames():
     return jsonify({i.id: i.nick for i in User.query.all()})
 
+@app.route('/api/splitter/<token>')
+def return_number_part(token):
+    return token.split('\n')[0]
+
 @app.route('/api/login/token/<int:secret_value>')
 def _token(secret_value):
     print(secret_value, type(secret_value))
