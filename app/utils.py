@@ -47,11 +47,10 @@ def token_required(func):
     def decor(*args, **kwargs):
         original = request.args.get('token').split(':')
         tok = Token.query.get(original[1])
-        valid_is = tok and tok.date == str(datetime.date.today())
-        valid_is = valid_is and tok.address == request.remote_addr
-        valid_is = valid_is and tok.useragent == str(request.user_agent)
-        valid_is = valid_is and (int(original[0]) == sequence_getter(tok.sequence_seed, tok.sequence_member, *tok.secret_keys))
-        if valid_is:
+        if all((tok,  #token isn't none 
+               tok.address == request.remote_addr, #token from same device
+               tok.useragent == str(request.user_agent), #token from same origin
+               int(original[0]) == sequence_getter(tok.sequence_seed, tok.sequence_member, *tok.secret_keys))): #token has same transformation path
             try:
                 res = func(*args, **kwargs, game=tok.game, token=tok)
                 tok.sequence_member += 1

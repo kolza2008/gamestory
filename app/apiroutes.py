@@ -69,7 +69,7 @@ def login_for_apps():
 
 @app.route('/api/check_valid/<token>')
 def check_valid_token(token):
-    token_from_db = Token.query.filter_by(token=token).first
+    token_from_db = Token.query.filter_by(token=token).first()
     return '1' if not (token_from_db == None) else '0'
 
 @app.route('/buddy_apps')

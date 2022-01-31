@@ -53,7 +53,8 @@ def game_apk(id_):
 
 @app.route('/subscribe', methods=['GET', 'POST'])
 def subscribe():
-    print(request.form.get('object'))
+    print(request.form)
+    print(request.args)
     try:
         obj = NotificationSubscription(
             subscriptiondata=request.form.get('object'),

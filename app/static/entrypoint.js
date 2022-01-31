@@ -1,66 +1,77 @@
+firebase.initializeApp({
+    'messagingSenderId': '<SENDER_ID>'
+});
 
-var key = urlBase64ToUint8Array(document.getElementById('notify_key').content)//getKey()
+// браузер поддерживает уведомления
+// вообще, эту проверку должна делать библиотека Firebase, но она этого не делает
+if ('Notification' in window) {
+    var messaging = firebase.messaging();
 
-function urlBase64ToUint8Array(base64String) {
-    var padding = '='.repeat((4 - base64String.length % 4) % 4);
-    var base64 = (base64String + padding)
-        .replace(/\-/g, '+')
-        .replace(/_/g, '/');
-
-    var rawData = window.atob(base64);
-    var outputArray = new Uint8Array(rawData.length);
-
-    for (var i = 0; i < rawData.length; ++i) {
-        outputArray[i] = rawData.charCodeAt(i);
+    // пользователь уже разрешил получение уведомлений
+    // подписываем на уведомления если ещё не подписали
+    if (Notification.permission === 'granted') {
+        subscribe();
     }
-    return outputArray;
-};
 
-var sendSubscriptionToBackend = function(subscription){
-    console.log(JSON.stringify(subscription));
-    fetch('/subscribe', {'method':'post', 'body': JSON.stringify(subscription)})
-    $.post('/subscribe',
-           {'object':JSON.stringify(subscription)});
-};
+    // по клику, запрашиваем у пользователя разрешение на уведомления
+    // и подписываем его
+    $('#subscribe').on('click', function () {
+        subscribe();
+    });
+}
 
-let subscribe = function(){
-    // Проверка поддержки браузером уведомлений
-    if (!("Notification" in window)) {
-        alert("Ваш браузер не поддерживает уведомления");
-        return;
+function subscribe() {
+    // запрашиваем разрешение на получение уведомлений
+    messaging.requestPermission()
+        .then(function () {
+            // получаем ID устройства
+            messaging.getToken()
+                .then(function (currentToken) {
+                    console.log(currentToken);
+
+                    if (currentToken) {
+                        sendTokenToServer(currentToken);
+                    } else {
+                        console.warn('Не удалось получить токен.');
+                        setTokenSentToServer(false);
+                    }
+                })
+                .catch(function (err) {
+                    console.warn('При получении токена произошла ошибка.', err);
+                    setTokenSentToServer(false);
+                });
+    })
+    .catch(function (err) {
+        console.warn('Не удалось получить разрешение на показ уведомлений.', err);
+    });
+}
+
+// отправка ID на сервер
+function sendTokenToServer(currentToken) {
+    if (!isTokenSentToServer(currentToken)) {
+        console.log('Отправка токена на сервер...');
+
+        var url = '/subscribe'; // адрес скрипта на сервере который сохраняет ID устройства
+        $.post(url, {
+            token: currentToken
+        });
+
+        setTokenSentToServer(currentToken);
+    } else {
+        console.log('Токен уже отправлен на сервер.');
     }
-    // Проверка разрешения на отправку уведомлений
-    else if (Notification.permission === "granted") {
-        // Если разрешено, то создаём уведомление
-        var notification = new Notification("Все ок!");
-    }
-    // В противном случае, запрашиваем разрешение
-    else if (Notification.permission !== 'denied') {
-        Notification.requestPermission(function (permission) {
-        // Если пользователь разрешил, то создаём уведомление
-        if (permission === "granted") {
-            var notification = new Notification("Все ок!");
-        } 
-        else {
-            return;
-        }});
-    };
-    if (!('PushManager' in window)) {
-        alert('Ваш браузер не поддерживает пуш-уведомления')
-        return;
-    };
-    if(!('serviceWorker' in navigator)){
-        alert('Ваш браузер не поддерживает фоновые задачи');
-        return;
-    };
-    navigator.serviceWorker.register('/sw').then(
-        function(registration){
-            var subscribeOptions = {
-                userVisibleOnly: true,
-                applicationServerKey: key,
-            };
-            registration.pushManager.subscribe(subscribeOptions).then(subscription => sendSubscriptionToBackend(subscription)); 
-        }
+}
+
+// используем localStorage для отметки того,
+// что пользователь уже подписался на уведомления
+function isTokenSentToServer(currentToken) {
+    return window.localStorage.getItem('sentFirebaseMessagingToken') == currentToken;
+}
+
+function setTokenSentToServer(currentToken) {
+    window.localStorage.setItem(
+        'sentFirebaseMessagingToken',
+        currentToken ? currentToken : ''
     );
-};
+}
  
