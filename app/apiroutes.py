@@ -29,6 +29,7 @@ def code_delivery():
 
 @app.route('/api/login/token/<int:secret_value>')
 def _token(secret_value):
+    game_for = False
     for i in Game.query.all():
         print(i.secret_product, type(i.secret_product))
         print(secret_value, type(secret_value))
