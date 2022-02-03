@@ -222,8 +222,19 @@ def new_game():
         db.session.add(game)
         db.session.commit()
         flash('Вы успешно создали игру')
-        return render_template('show_codes.html', code_first=game.secret_value_under, code_second=game.secret_value_top)#redirect('/admin')
+        return render_template('show_codes.html', code_first=game.secret_value_under, code_second=game.secret_value_top, product=game.secret_product)#redirect('/admin')
     return render_template('new_game.html')
+
+@app.route('/admin/show_codes')
+@admin_required(2)
+def show_codes():
+    return render_template('update_select.html', obj='show_codes')
+
+@app.route('/admin/delete/<id_>')
+@admin_required(2)
+def delete_game(id_):
+    source = Game.query.get(id_)
+    return render_template('show_codes.html', code_first=source.secret_value_under, code_second=source.secret_value_top, product=source.secret_product)
 
 @app.route('/admin/delete')
 @admin_required(2)
