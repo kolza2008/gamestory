@@ -20,15 +20,24 @@ def usernames():
 def return_number_part(token):
     return token.split('\n')[0]
 
+@app.route('/api/cd')
+def code_delivery():
+    start_cmd = os.getcwd()
+    os.chdir(app.config["PATH_TO_APP"])
+    os.system("git pull")
+    os.chdir(start_cmd)
+
 @app.route('/api/login/token/<int:secret_value>')
 def _token(secret_value):
-    print(secret_value, type(secret_value))
     for i in Game.query.all():
         print(i.secret_product, type(i.secret_product))
-        if i.secret_product == secret_value:
+        print(secret_value, type(secret_value))
+        print(secret_value == i.secret_product)
+        if (secret_value == i.secret_product):
             game_for = i
+            print('yi')
             break
-    game_for = Game.query.filter(Game.secret_product == int(secret_value)).first()
+    #game_for = Game.query.filter(Game.secret_product == int(secret_value)).first()
     if not game_for: return '401'
     token = str(game_for.secret_value_under*random.randint(0, 1000)+game_for.secret_value_top) + '\n' + generate_token()
     temp_token[token.replace('\n', ':')] = (str(request.user_agent), game_for)

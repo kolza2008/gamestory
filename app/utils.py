@@ -1,4 +1,6 @@
+import os
 import json
+import zipfile
 import datetime
 from app import app
 import random, string
@@ -85,3 +87,20 @@ def sequence_getter(seed, member, *secret_keys):
     for i in range(1, member):
         res = res * secret_keys[0] // secret_keys[1] - secret_keys[2]
     return res
+
+
+class FileManager():
+    def __init__(self, app_path, photo_path, zip_path):
+        self.zip_path = zip_path
+        self.app_path = app_path
+        self.photo_path = photo_path
+    def add_game(self, game):
+        with zipfile.ZipFile(os.path.join(self.zip_path, f'{game.name.lower().replace(" ", "")}.zip'), 'x') as file:
+            file.write(os.path.join(self.photo_path, game.photo_name), arcname=game.photo_name)
+            file.write(os.path.join(self.app_path, game.apk_name), arcname=game.apk_name)
+    def get_photo(self, game):
+         with zipfile.ZipFile(os.path.join(self.zip_path, f'{game.name.lower().replace(" ", "")}.zip'), 'r') as file:
+             return file.read(game.photo_name)
+    def get_apk(self, game):
+         with zipfile.ZipFile(os.path.join(self.zip_path, f'{game.name.lower().replace(" ", "")}.zip'), 'r') as file:
+             return file.read(game.apk_name)

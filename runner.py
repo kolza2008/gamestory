@@ -14,6 +14,7 @@ def admin_user():
     
 
 def set_workspace():
+    if not os.path.exists('zips'): os.mkdir('zips')
     if not os.path.exists('photos'): os.mkdir('photos')
     if not os.path.exists('applications'): os.mkdir('applications')
 
