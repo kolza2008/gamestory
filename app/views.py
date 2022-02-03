@@ -230,9 +230,9 @@ def new_game():
 def show_codes():
     return render_template('update_select.html', obj='show_codes')
 
-@app.route('/admin/delete/<id_>')
+@app.route('/admin/show_codes/<id_>')
 @admin_required(2)
-def delete_game(id_):
+def show_code(id_):
     source = Game.query.get(id_)
     return render_template('show_codes.html', code_first=source.secret_value_under, code_second=source.secret_value_top, product=source.secret_product)
 
