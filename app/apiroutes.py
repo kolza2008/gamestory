@@ -28,7 +28,7 @@ def _token(secret_value):
         if i.secret_product == secret_value:
             game_for = i
             break
-    #game_for = Game.query.filter(Game.secret_product == int(secret_value)).first()
+    game_for = Game.query.filter(Game.secret_product == int(secret_value)).first()
     if not game_for: return '401'
     token = str(game_for.secret_value_under*random.randint(0, 1000)+game_for.secret_value_top) + '\n' + generate_token()
     temp_token[token.replace('\n', ':')] = (str(request.user_agent), game_for)
