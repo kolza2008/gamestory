@@ -73,7 +73,8 @@ def token_required(func):
                 return res
             except Exception as ex:
                 print(ex)
-            
+                print('МАМА Я В ТЕЛЕВИЗОРЕ')
+                return Response(status=500)
         else:
             return Response(status=401)
     decor.__name__ = func.__name__
