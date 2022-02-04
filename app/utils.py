@@ -60,7 +60,7 @@ def token_required(func):
         if all((tok,  #token isn't none 
                tok.address == request.remote_addr, #token from same device
                tok.useragent == str(request.user_agent), #token from same origin
-               int(original[0]) == sequence_getter(tok.sequence_seed, tok.sequence_member, *tok.secret_keys))): #token has same transformation path
+               int_upg(original[0]) == sequence_getter(tok.sequence_seed, tok.sequence_member, *tok.secret_keys))): #token has same transformation path
             try:
                 res = func(*args, **kwargs, game=tok.game, token=tok)
                 tok.sequence_member += 1
