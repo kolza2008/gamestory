@@ -9,7 +9,14 @@ from pywebpush import webpush, WebPushException
 from flask import redirect, flash, request, Response
 from flask_login import login_required, current_user
 
+def int_upg(text):
+    if not 'E' in text:
+        return int(text)
+    else:
+        parts = text.lower().split('e')
+        return int(float(parts[0]) * (10 ** int(parts[1])))
 
+        
 def push_notification(user_id, data):
     user_subscription = NotificationSubscription.query.filter_by(userdata=user_id).first()
     try:
@@ -49,6 +56,7 @@ def token_required(func):
     def decor(*args, **kwargs):
         original = request.args.get('token').split(':')
         tok = Token.query.get(original[1])
+        if not tok: return Response(status=418)
         if all((tok,  #token isn't none 
                tok.address == request.remote_addr, #token from same device
                tok.useragent == str(request.user_agent), #token from same origin

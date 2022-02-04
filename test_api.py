@@ -1,12 +1,15 @@
 import requests
 
-SERVER_URL = "http://127.0.0.1:5000" #"https://kolza2008.pythonanywhere.com" #
-CODE_UNDER = 795450
-CODE_TOP = 960335
+SERVER_URL = "https://kolza2008.pythonanywhere.com" #"http://127.0.0.1:5000" # #
+CODE_UNDER = 432828
+CODE_TOP = 437425
 
 token_rq = requests.get(f'{SERVER_URL}/api/login/token/{CODE_UNDER*CODE_TOP}')
 token = token_rq.text.split('\n')
 SECRET_KEY = (int(token[0]) - CODE_TOP) // CODE_UNDER
+
+if token[0] == '401':
+    raise ValueError('Server dont accept server')
 
 print(f'{SERVER_URL}/api/login?token={":".join(token)}')
 while True:

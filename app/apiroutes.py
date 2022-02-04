@@ -26,6 +26,7 @@ def code_delivery():
     os.chdir(app.config["PATH_TO_APP"])
     os.system("git pull")
     os.chdir(start_cmd)
+    return 'ok'
 
 @app.route('/api/login/token/<int:secret_value>')
 def _token(secret_value):
