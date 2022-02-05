@@ -31,14 +31,14 @@ def code_delivery():
 @app.route('/api/debug_token/<argum>')
 def debug_token(argum):
     token = Token.query.filter_by(token=argum).first()
-    return ' '.join([token.token,
-                    token.address,
-                    token.useragent,
-                    token.user,
-                    token.game,
-                    token.sequence_seed,
-                    token.sequence_member,
-                    token.secret_key])
+    return ' '.join([str(i) for i in [token.token,
+                                      token.address,
+                                      token.useragent,
+                                      token.user,
+                                      token.game,
+                                      token.sequence_seed,
+                                      token.sequence_member,
+                                      token.secret_key]])
 
 @app.route('/api/login/token/<int:secret_value>')
 def _token(secret_value):
