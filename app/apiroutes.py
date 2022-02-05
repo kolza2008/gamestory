@@ -30,7 +30,7 @@ def code_delivery():
 
 @app.route('/api/debug_token/<argum>')
 def debug_token(argum):
-    token = Token.query.filter_by(token=argum)
+    token = Token.query.filter_by(token=argum).first()
     return ' '.join(token.token,
                     token.address,
                     token.useragent,
