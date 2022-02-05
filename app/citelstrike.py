@@ -57,7 +57,7 @@ def new_lobby_room(name_room, game, token):
 @token_required
 def enter_room(name_room, game=None, token=None):
     #print(lobby.get(name_room, False))
-    if not lobby.get(name_room, False): return Response(404)
+    if not lobby.get(name_room, False): return Response(status=404)
     if not 'nullplayer' in lobby[name_room].nicks: return Response(status=423)
     if User.query.get(token.user).nick in lobby[name_room].nicks: return Response(status=409)
     lobby[name_room].set_user(token.user)

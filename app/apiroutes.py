@@ -28,6 +28,18 @@ def code_delivery():
     os.chdir(start_cmd)
     return 'ok'
 
+@app.route('/api/debug_token/<argum>')
+def debug_token(argum):
+    token = Token.query.filter_by(token=argum)
+    return ' '.join(token.token,
+                    token.address,
+                    token.useragent,
+                    token.user,
+                    token.game,
+                    token.sequence_seed,
+                    token.sequence_memder,
+                    token.secret_key)
+
 @app.route('/api/login/token/<int:secret_value>')
 def _token(secret_value):
     game_for = False
