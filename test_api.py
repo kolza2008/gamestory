@@ -1,8 +1,8 @@
 import requests
 
-SERVER_URL = "http://127.0.0.1:5000" #"https://kolza2008.pythonanywhere.com" 
-CODE_UNDER = 795450 #432828
-CODE_TOP = 960335 #437425
+SERVER_URL = "https://kolza2008.pythonanywhere.com"#"http://127.0.0.1:5000" # 
+CODE_UNDER = 432828 #795450
+CODE_TOP = 437425 #960335
 
 token_rq = requests.get(f'{SERVER_URL}/api/login/token/{CODE_UNDER*CODE_TOP}')
 token = token_rq.text.split('\n')

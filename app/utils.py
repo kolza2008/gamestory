@@ -14,7 +14,7 @@ def int_upg(text):
         return int(text)
     else:
         parts = text.lower().split('e')
-        return int(float(parts[0]) * (10 ** int(parts[1])))
+        return round(float(parts[0]) * (10 ** int(parts[1])))
 
         
 def push_notification(user_id, data):
