@@ -37,7 +37,7 @@ def debug_token(argum):
                     token.user,
                     token.game,
                     token.sequence_seed,
-                    token.sequence_memder,
+                    token.sequence_member,
                     token.secret_key)
 
 @app.route('/api/login/token/<int:secret_value>')
