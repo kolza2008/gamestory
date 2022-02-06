@@ -1,9 +1,10 @@
 import os
 import time
 from flask import *
-from app import app, temp_codes
+import multiprocessing
 from app.utils import *
 from app.models import *
+from app import app, temp_codes
 from flask_login import login_required, current_user, login_user, logout_user
 
 @app.after_request
@@ -209,8 +210,10 @@ def new_game():
         photo_name = f"{name}.{photo.filename.split('.')[-1]}"
         apk_name = f"{name.lower().replace(' ', '')}-{version}.apk"
 
-        photo.save(os.path.join(app.config['PATH_TO_APP']+('photos'), photo_name))
-        apk.save(os.path.join(app.config['PATH_TO_APP']+('applications'), apk_name))
+        photo_process = multiprocessing.Process(target=save_worker, args=(photo, photo_name, 'photos')) #photo.save(os.path.join(app.config['PATH_TO_APP']+(), photo_name))
+        apk_process = multiprocessing.Process(target=save_worker, args=(apk, apk_name, 'applications')) #apk.save(os.path.join(app.config['PATH_TO_APP']+('applications'), apk_name))
+
+        [i.start() for i in (photo_process, apk_process)]
 
         game = Game(name=name,
                     timestamp=int(time.time()),
@@ -289,10 +292,10 @@ def login():
         if not user or not user.check_password(request.form.get('pass')):
             flash('Неправильный ник или пароль')
             return redirect('/login')
-        if request.form.get('rememberme'):
+        '''if request.form.get('rememberme'):
             login_user(user, remember=True)
-        else:
-            login_user(user)
+        else:'''
+        login_user(user)
         return redirect('/')
     return render_template('login.html')
 
