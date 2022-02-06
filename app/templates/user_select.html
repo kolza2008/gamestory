@@ -1,0 +1,22 @@
+{% extends "base.html"%}
+{% block title %}Обновление игр{% endblock %}
+{% block app_content %}
+<table id='table' style='width:100%'>
+</table>
+<script>
+    async function get_users(){
+        return await fetch('/api/users').then(response => response.json());
+    };
+    var users = get_users()
+    console.log(users);
+    users.then(function(users){
+        for(let i = 0; i!=users['main'].length;i++){
+            var data = users['main'][i]
+            var obj = document.createElement('tr') 
+            obj.style = 'border-width: 2px 0px; border-color: black;';
+            obj.innerHTML = `<td><a href='/admin/{{obj}}/${data['id']}'>${data['username']}</a></td><td>${data['id']}</td>`
+            document.getElementById('table').appendChild(obj);
+        };
+    });
+</script>
+{% endblock %}

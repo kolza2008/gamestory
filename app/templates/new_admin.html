@@ -1,0 +1,20 @@
+{% extends "base.html"%}
+{% block title %}Регистрация{% endblock %}
+{% block app_content %}
+    <form method="post" class='center'>
+        <h1>Регистрация</h1>
+        <div class='input'>
+            <label>Никнейм: </label>
+            <input type='text' name='name'>
+        </div>
+        <div class='input'>
+            <label>Пароль: </label>
+            <input type='password' name='pass'>
+        </div>
+        <div class='input'>
+            <label>Роль(1-обычный админ, 2-суперадмин): </label>
+            <input type='number' name='role'>
+        </div>
+        <input type='submit' class="btn btn-lg btn-primary btn-block">
+    </form>
+{% endblock %}

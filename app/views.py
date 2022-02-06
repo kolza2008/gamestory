@@ -225,6 +225,35 @@ def new_game():
         return render_template('show_codes.html', code_first=game.secret_value_under, code_second=game.secret_value_top, product=game.secret_product)#redirect('/admin')
     return render_template('new_game.html')
 
+@app.route('/admin/new_user', methods=['GET', 'POST'])
+@admin_required(2)
+def create_admin_user():
+    if request.method == 'POST':
+        if User.query.filter_by(nick=request.form.get('name')).first():
+            flash('Такой пользователь уже существует')
+            return redirect('/admin/new_user')
+        user = User(nick=request.form.get('name'), role=int(request.form.get('role')))
+        user.set_password(request.form.get('pass'))
+        db.session.add(user)
+        db.session.commit()
+        flash(f'Админ аккаунт {user.nick} есть')
+        return redirect('/admin')
+    return render_template('new_admin.html')
+
+@app.route('/admin/user_delete')
+@admin_required(2)
+def user_delete_select():
+    return render_template('user_select.html', obj='user_delete')
+
+@app.route('/admin/user_delete/<id_>')
+@admin_required(2)
+def user_delete(id_):
+    user = User.query.get(id_)
+    db.session.delete(user)
+    db.session.commit()
+    flash(f'Пользователь с ником {user.nick} был удален')
+    return redirect('/admin')
+
 @app.route('/admin/show_codes')
 @admin_required(2)
 def show_codes():
@@ -260,7 +289,10 @@ def login():
         if not user or not user.check_password(request.form.get('pass')):
             flash('Неправильный ник или пароль')
             return redirect('/login')
-        login_user(user)
+        if request.form.get('rememberme'):
+            login_user(user, remember=True)
+        else:
+            login_user(user)
         return redirect('/')
     return render_template('login.html')
 
