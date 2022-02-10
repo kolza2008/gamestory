@@ -1,4 +1,5 @@
 import os
+import platform
 from flask import *
 from flask_cors import *
 from flask_mail import Mail 
@@ -9,7 +10,10 @@ from flask_bootstrap import Bootstrap
 
 
 app = Flask(__name__)
-app.config.from_object(os.environ.get('CONFIG') or 'config.ConfigOnTest')
+if platform.system() == 'Windows':
+    app.config.from_object(os.environ.get('CONFIG') or 'config.ConfigOnTest')
+else:
+    app.config.from_object('config.ConfigOnServer')
 
 mail = Mail(app)
 cors = CORS(app)

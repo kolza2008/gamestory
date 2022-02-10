@@ -3,6 +3,7 @@ from flask import *
 from app.utils import *
 from app.models import *
 from app import app, temp_token
+from flask_login import current_user
 
 @app.route('/api/games')
 def games():
@@ -59,6 +60,7 @@ def _token(secret_value):
 
 @app.route('/api/login', methods=['GET', 'POST'])
 def login_for_apps():
+    #print(not current_user.is_authenticated)
     if request.method == 'POST':
         user = User.query.filter_by(nick=request.form.get('name')).first()
         if not user or not user.check_password(request.form.get('pass')):

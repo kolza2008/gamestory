@@ -1,10 +1,9 @@
 import os
 import time
 from flask import *
-import multiprocessing
+from app import app, temp_codes
 from app.utils import *
 from app.models import *
-from app import app, temp_codes
 from flask_login import login_required, current_user, login_user, logout_user
 
 @app.after_request
@@ -210,10 +209,8 @@ def new_game():
         photo_name = f"{name}.{photo.filename.split('.')[-1]}"
         apk_name = f"{name.lower().replace(' ', '')}-{version}.apk"
 
-        photo_process = multiprocessing.Process(target=save_worker, args=(photo, photo_name, 'photos')) #photo.save(os.path.join(app.config['PATH_TO_APP']+(), photo_name))
-        apk_process = multiprocessing.Process(target=save_worker, args=(apk, apk_name, 'applications')) #apk.save(os.path.join(app.config['PATH_TO_APP']+('applications'), apk_name))
-
-        [i.start() for i in (photo_process, apk_process)]
+        photo.save(os.path.join(app.config['PATH_TO_APP']+('photos'), photo_name))
+        apk.save(os.path.join(app.config['PATH_TO_APP']+('applications'), apk_name))
 
         game = Game(name=name,
                     timestamp=int(time.time()),

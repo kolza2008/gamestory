@@ -1,4 +1,5 @@
 import os
+import platform
 from app import app, db
 from app.models import User, Game
 
@@ -21,6 +22,8 @@ def set_workspace():
 def print_products():
     for i in Game.query.all():
         print(i.name, i.secret_product)
+
+print(platform.system())
 
 set_workspace()
 db.create_all()

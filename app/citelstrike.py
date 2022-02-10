@@ -1,14 +1,40 @@
-from re import S
 from app.models import *
 from app.utils import *
 from flask import *
 from app import app
+import time
 
+
+METHODS = ['left', 'right', 'forward', 'back', 'shoot_in', 'shoot_out', 'win1', 'win2']
+
+
+class Event():
+    def __init__(self, method_type, owner):
+        self.owner = owner
+        if method_type in METHODS:
+            self.method = method_type
+        else:
+            raise TypeError('Method type is not allowed')
+        self.timestamp = time.time()
+    @property
+    def prioritet(self) -> int : 
+        if self.method in ('win1', 'win2'): return 3
+        elif self.method in ('shoot_in', 'shoot_out'): return 2
+        elif self.method in ('left', 'right', 'forward', 'back'): return 10
+        else: return 0
 
 class GameState():
     def __init__(self):
-        self.user1, self.user1_status = -1, 'wait'
-        self.user2, self.user2_status = -1, 'wait'
+        self.user1, self.user2 = -1, -1
+        self.status = 'wait'
+
+        self.user1_time = time.time()
+        self.user2_time = time.time()
+
+        self.events = []
+        self.health_u1 = 100
+        self.health_u2 = 100
+
     def set_user(self, id_):
         if self.user1 < 0:
             self.user1 = id_
@@ -24,13 +50,7 @@ class GameState():
         return self.user1 == id_ or self.user2 == id_
     @property
     def nicks(self):
-        return (User.query.get(self.user1).nick, User.query.get(self.user2).nick if User.query.get(self.user2) else 'nullplayer')
-    @property
-    def status(self):
-        if self.user1_status == 'ready':
-            if self.user2_status == 'ready':
-                return 'ready'
-        return 'wait'    
+        return (User.query.get(self.user1).nick, User.query.get(self.user2).nick if User.query.get(self.user2) else 'nullplayer')    
     def __repr__(self):
         return '\n'.join([self.nicks[0], 
                           self.nicks[1], 
@@ -68,13 +88,17 @@ def enter_room(name_room, game=None, token=None):
 def all_rooms():
     return '\n'.join(lobby.keys())
 
-@app.route('/api/game/cs/lobby/status/<id_text>')
+@app.route('/api/game/cs/status')
 @token_required
-def get_room(id_text, game, token):
-    game_state = lobby[id_text]
-    if not game_state: return Response(status=404)
+def get_room(game, token):
+    game_state = room(token.user)
+    try:
+        name = list(game_state.keys())[0]
+        game_state = game_state[name]
+    except:
+        return Response(status=404)
     #print(game_state.user_status)
-    res = '\n'.join([id_text, 
+    res = '\n'.join([name, 
                      game_state.nicks[0], 
                      game_state.nicks[1], 
                      game_state.status])
@@ -84,13 +108,78 @@ def get_room(id_text, game, token):
 @token_required
 def set_ready(game, token):
     game_state = room(token.user)
-    name = list(game_state.keys())[0]
-    game_state = game_state[name]
+    try:
+        name = list(game_state.keys())[0]
+        game_state = game_state[name]
+    except:
+        return Response(status=423)
     user_id = game_state.user_id(token.user)
     print(user_id)
-    if user_id > 0:
-        if user_id == 1:  game_state.user1_status = 'ready'
-        elif user_id == 2:  game_state.user2_status = 'ready'
+    if user_id == 1 and game_state.user2 != -1:
+        game_state.status = 'ready'
         return '1'
     else:
         return Response(status=423)
+
+@app.route('/api/game/cs/exit')
+@token_required
+def exit_room(game, token):
+    game_state = room(token.user)
+    try:
+        name = list(game_state.keys())[0]
+        game_state = game_state[name]
+    except:
+        return Response(status=423)
+    user_id = game_state.user_id(token.user)
+    if user_id == 1: game_state.user1, game_state.user2 = game_state.user2, -1
+    elif user_id == 2: game_state.user2 = -1
+    if game_state.user1 == -1 and game_state.user2 == -1: del lobby[name]
+    return '1'
+
+@app.route('/api/game/cs/operate/<method>')
+@token_required
+def operate_method(method, game, token):
+    game_state = room(token.user)
+    try:
+        name = list(game_state.keys())[0]
+        game_state = game_state[name]
+    except:
+        return Response(status=423)
+    user_id = game_state.user_id(token.user)
+    invert_id = 2 if user_id == 1 else 1
+    
+    try:
+        game_state.events.append(Event(method, user_id))
+        if method == 'shoot_in':
+            exec(f'state.health_u{invert_id} -= 10', {'state': game_state})
+            if eval(f'state.health_u{invert_id}', {'state': game_state}) == 0:
+                game_state.events.append(Event(f'win{user_id}', user_id))
+    except TypeError:
+        return Response(status=406)
+
+    return '1'
+
+@app.route('/api/game/cs/lastevents')
+@token_required
+def last_events(game, token):
+    game_state = room(token.user)
+    try:
+        name = list(game_state.keys())[0]
+        game_state = game_state[name]
+    except:
+        return Response(status=423)
+    user_id = game_state.user_id(token.user)
+    invert_id = 2 if user_id == 1 else 1
+
+    last_time:float = game_state.user1_time if user_id == 1 else game_state.user2_time
+    now = time.time()
+
+    events = list(filter(lambda x: x.owner == invert_id and now>x.timestamp>last_time, game_state.events))
+    events = sorted(events, key=lambda x: x.prioritet)
+
+    if user_id == 1: 
+        game_state.user1_time = now
+    else:
+        game_state.user2_time = now
+
+    return '\n'.join([event.method for event in events])

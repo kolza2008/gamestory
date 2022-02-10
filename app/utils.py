@@ -113,3 +113,6 @@ class FileManager():
     def get_apk(self, game):
          with zipfile.ZipFile(os.path.join(self.zip_path, f'{game.name.lower().replace(" ", "")}.zip'), 'r') as file:
              return file.read(game.apk_name)
+
+def save_worker(file, filename, directory):
+    file.save(os.path.join(app.config['PATH_TO_APP']+directory, filename))
