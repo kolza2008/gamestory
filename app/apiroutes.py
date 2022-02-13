@@ -25,6 +25,7 @@ def return_number_part(token):
 def code_delivery():
     start_cmd = os.getcwd()
     os.chdir(app.config["PATH_TO_APP"])
+    os.system("git reset --hard")
     os.system("git pull")
     os.chdir(start_cmd)
     return 'ok'
