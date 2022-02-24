@@ -7,6 +7,7 @@ from flask_sqlalchemy import *
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_bootstrap import Bootstrap
+import logging
 
 
 app = Flask(__name__)
@@ -25,6 +26,8 @@ lm.login_view = 'login'
 
 temp_token = {}
 temp_codes = {}
+
+tokenlog = logging.getLogger('apitokens')
 
 from . import views
 from . import errors
