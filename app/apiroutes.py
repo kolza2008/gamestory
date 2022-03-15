@@ -93,6 +93,33 @@ def login_for_apps():
         return redirect('/buddy_apps')
     return render_template('login.html', token=request.args.get('token'))
 
+@app.route('/api/login/raw')
+def raw_login():
+    try:
+        nickname = request.args['nick']
+        password = request.args['pass']
+        token = request.args["token"]
+    except KeyError:
+        return Response(status=418)
+    user = User.query.filter_by(nick=nickname).first()
+    if not user or not user.check_password(password):
+        flash('Неправильный ник или пароль')
+        return Response(status=418)
+    db.session.add(
+        Token(
+            token = token.split(':')[1],
+            sequence_seed = int(token.split(':')[0]),
+            useragent = temp_token[token][0],
+            address = request.remote_addr,
+            date = str(datetime.date.today()),
+            user = user.id,
+            game = temp_token[token][1].id,
+            secret_key = (int(token.split(':')[0]) - temp_token[token][1].secret_value_top) // temp_token[token][1].secret_value_under
+        )
+    )
+    db.session.commit()
+    return f'{nickname} is authorizated'
+
 @app.route('/api/check_valid/<token>')
 def check_valid_token(token):
     token_from_db = Token.query.filter_by(token=token).first()

@@ -13,7 +13,7 @@ class ConfigOnTest:
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024
     SQLALCHEMY_DATABASE_URI = 'sqlite:///db.db'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    PATH_TO_APP = "F:\projects\gamestore\\"
+    PATH_TO_APP = "C:\\Users\\kolza2008\\projects\\gamestory\\"
     NOTIFICATION_KEY = 'BCXEWPCfg8wIkw3DrXOyHNMWzzfEEFPAWnkBK95Hs9PNIOKDi2_I6IrCTtNbSu-Uxlx4dN2CGP0b9gJIuqD5gLQ'
 
 class ConfigOnServer(ConfigOnTest):
