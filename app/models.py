@@ -43,10 +43,17 @@ class Game(db.Model):
     def secret_product(self):
         return self.secret_value_under * self.secret_value_top
     @property
+    def price(self):
+        try:
+            return GameFinance.query.filter_by(game=self.id).first().price
+        except AttributeError:
+            return 0.0
+    @property
     def json(self):
         return {
             'id': self.id,
             'name': self.name,
+            'price': self.price,
             'version': self.version,
             'timestamp': self.timestamp,
             'description': self.description,
@@ -117,3 +124,26 @@ class FriendRequest(db.Model):
             'waiter': self.waiter,
             'decisiver': self.decisiver
         }
+
+class GameFinance(db.Model):
+    __tablename__ = "pricetogame"
+    id = db.Column(db.Integer(), primary_key=True, nullable=True)
+    game = db.Column(db.Integer(), db.ForeignKey('content.id', ondelete='CASCADE'))
+    price = db.Column(db.Float())
+    discount = db.Column(db.String(2048))
+
+class GamePurchases(db.Model):
+    __tablename__ = "purchases_game"
+    id = db.Column(db.Integer(), primary_key=True, nullable=True)
+    date = db.Column(db.Integer())
+    user = db.Column(db.Integer(), db.ForeignKey('users.id', ondelete='CASCADE'))
+    game = db.Column(db.Integer(), db.ForeignKey('content.id', ondelete='CASCADE'))
+
+class GameDeal(db.Model):
+    __tablename__ = "deal_for_game"
+    id = db.Column(db.Integer(), primary_key=True, nullable=True)
+    key_in_qiwi = db.Column(db.String(256))
+    status = db.Column(db.String(32))
+    timestamp = db.Column(db.Integer())
+    user = db.Column(db.Integer(), db.ForeignKey('users.id', ondelete='CASCADE'))
+    game = db.Column(db.Integer(), db.ForeignKey('content.id', ondelete='CASCADE'))

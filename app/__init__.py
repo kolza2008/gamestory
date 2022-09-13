@@ -30,7 +30,9 @@ temp_codes = {}
 tokenlog = logging.getLogger('apitokens')
 
 from . import views
+from . import admin
 from . import errors
 from . import models
+from . import paysystem
 from . import apiroutes
 from . import citelstrike

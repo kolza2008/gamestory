@@ -10,7 +10,13 @@
             <td style='width:30%; text-align: center;'>
                 <img src='/game/photo/{{obj.id}}' style='width:100%;height:auto'></br>
                 <a href='/game/achievement/{{obj.id}}'>Достижения</a></br>
+                {% if obj.price == 0.0 %}
                 <a class="btn btn-lg btn-primary btn-block" onclick="donwload({'id':'{{obj.id}}', 'name':'{{obj.name}}', 'version':'{{obj.version}}'})" href='/game/donwload/{{obj.id}}' download>Скачать</a>
+                {% elif is_buy(obj.id)%}
+                <a class="btn btn-lg btn-primary btn-block" onclick="donwload({'id':'{{obj.id}}', 'name':'{{obj.name}}', 'version':'{{obj.version}}'})" href='/game/donwload/{{obj.id}}' download>Скачать</a>
+                {% else %}
+                <a class="btn btn-lg btn-primary btn-block" href='/pay/game?id={{obj.id}}'>Купить за {{pricename(obj.price)}}</a>
+                {% endif %}
             </td>
         </tr>
     </div>

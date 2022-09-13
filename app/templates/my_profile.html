@@ -13,6 +13,23 @@
         </ul>
     </details>
     <details>
+        <summary>Платежи</summary>
+        <table>
+            <thead>
+                <tr>
+                    <th>Название платежа</th><th>Дата платежа</th><th>Статус</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in payments %}
+                <tr>
+                    <th>{{i.key_in_qiwi}}</th><th>{{datetime.datetime.fromtimestamp(i.timestamp)}}</th><th><img src="/static/status/{{i.status.lower()}}.png" style="width: 48px; height: auto;"></th>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </details>
+    <details>
         <summary>Взаимодействие с аккаунтом</summary>
         <ul>
             <li><a href='{{VK_URL()}}'>Привязать учетную запись ВК</a></li>

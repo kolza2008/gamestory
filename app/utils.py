@@ -89,7 +89,7 @@ def generate_token():
 def custom_context():
     def vk_oauth_url():
         return f'https://oauth.vk.com/authorize?client_id={app.config["VK_ID"]}&redirect_uri={app.config["APP_URL"]}/vk_entrypoint&display=page&scope={app.config["VK_SCOPE"]}&response_type=token'
-    return {'notify_key': app.config['NOTIFICATION_KEY'], 'VK_URL':vk_oauth_url}
+    return {'notify_key': app.config['NOTIFICATION_KEY'], 'VK_URL':vk_oauth_url, 'is_buy':is_buy, 'pricename':price_name, 'datetime':datetime}
 
 def sequence_getter(seed, member, *secret_keys):
     res = seed
@@ -116,3 +116,17 @@ class FileManager():
 
 def save_worker(file, filename, directory):
     file.save(os.path.join(app.config['PATH_TO_APP']+directory, filename))
+
+def is_buy(game): 
+    value = GamePurchases.query.filter_by(game=game, user=current_user.id).first() != None
+    print(value)
+    return value
+
+def price_name(value):
+    roundvalue = int(value) if value % 1 == 0 else value
+    if str(roundvalue // 1)[-1] == '1' and not(20 > roundvalue // 1 > 10):
+        return f'{roundvalue} рубль'
+    elif 5 > int(str(roundvalue // 1)[-1]) > 1:
+        return f'{roundvalue} рубля' 
+    else:
+        return f'{roundvalue} рублей'

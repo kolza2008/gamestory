@@ -10,7 +10,7 @@ class ConfigOnTest:
     MAIL_USE_TLS = True
     MAIL_USERNAME = 'imperativgames@gmail.com'
     MAIL_DEFAULT_SENDER = 'imperativgames@gmail.com'  
-    MAX_CONTENT_LENGTH = 16 * 1024 * 1024
+    MAX_CONTENT_LENGTH = 100 * 1024 * 1024
     SQLALCHEMY_DATABASE_URI = 'sqlite:///db.db'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     PATH_TO_APP = "C:\\Users\\kolza2008\\projects\\gamestory\\"
