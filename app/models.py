@@ -37,6 +37,8 @@ class Game(db.Model):
     photo_name = db.Column(db.String(20), nullable=False)
     apk_name = db.Column(db.String(20), nullable=False)
 
+    donwloads = db.Column(db.Integer(), default=0)
+
     secret_value_under = db.Column(db.Integer())
     secret_value_top = db.Column(db.Integer())
     @property
@@ -147,3 +149,9 @@ class GameDeal(db.Model):
     timestamp = db.Column(db.Integer())
     user = db.Column(db.Integer(), db.ForeignKey('users.id', ondelete='CASCADE'))
     game = db.Column(db.Integer(), db.ForeignKey('content.id', ondelete='CASCADE'))
+
+class StatisticRow(db.Model):
+    __tablename__ = 'statistics'
+    id = db.Column(db.Integer(), primary_key=True, nullable=True)
+    name = db.Column(db.String(128))
+    value = db.Column(db.Integer())
