@@ -54,6 +54,8 @@ def admin_required(roletype=1):
 
 def token_required(func):
     def decor(*args, **kwargs):
+        if not request.args.get('token'): 
+            return Response(status=400)
         original = request.args.get('token').split(':')
         tok = Token.query.get(original[1])
         if not tok: return Response(status=418)

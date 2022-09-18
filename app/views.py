@@ -36,10 +36,12 @@ def service_worker():
 
 @app.route('/game<id_>')
 def game_page(id_):
-    print(db.session.query(Game).get(id_).price)
+    obj = db.session.query(Game).get(id_)
+    if obj == None: 
+        return Response(status=404)
     if'Android' in str(request.user_agent):
-        return render_template('game_mobile.html', obj=db.session.query(Game).get(id_))
-    return render_template('game.html', obj=db.session.query(Game).get(id_))
+        return render_template('game_mobile.html', obj=obj)
+    return render_template('game.html', obj=obj)
 
 @app.route('/mobile/game<id_>')
 def mobile(id_):
