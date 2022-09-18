@@ -1,3 +1,4 @@
+import hashlib
 import datetime
 from flask import *
 from app.utils import *
@@ -90,6 +91,9 @@ def login_for_apps():
             flash('Ваш токен уже существует')
             return redirect(f'/api/login?token={request.args.get("token")}')
         db.session.commit()
+        if request.args.get("redirect"):
+            #print(redirect(request.args.get("redirect")).headers)
+            return redirect(request.args.get("redirect"))
         return redirect('/buddy_apps')
     return render_template('login.html', token=request.args.get('token'))
 
@@ -179,3 +183,18 @@ def get_friends(game, token):
     user = User.query.get(token.user)
     friends = list(*[User.query.get(i.user_2).nick for i in Friend.query.filter_by(user_1 = user.id).all()], *[User.query.get(i.user_1).nick for i in Friend.query.filter_by(user_2 = user.id).all()])
     return '\n'.join(friends)
+
+@app.route('/api/v0.2/syncronize/sign')
+@token_required
+def get_syncronize_sign_by_external_server(game, token):
+    """
+    <-:
+        token : 000000:abcdefgiklpyuguk
+    -> : 
+        md5(address+":"+useragent+"@"+top_key+":":under_key)
+    """
+    str_ = f"{token.address}:{token.useragent}@{Game.query.get(game).secret_value_top}:{Game.query.get(game).secret_value_under}"
+    print(str_)
+    return hashlib.md5(str_.encode('utf-8')).hexdigest()
+    
+    
