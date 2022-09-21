@@ -98,8 +98,8 @@ def select_delete_game():
 def delete_game(id_):
     game = Game.query.get(id_)
     db.session.delete(game)
-    os.remove(os.path.join(app.config['PATH_TO_APP']+('photos'), game.photo_name))
-    os.remove(os.path.join(app.config['PATH_TO_APP']+('applications'), game.apk_name))
+    #os.remove(os.path.join(app.config['PATH_TO_APP']+('photos'), game.photo_name))
+    #os.remove(os.path.join(app.config['PATH_TO_APP']+('applications'), game.apk_name))
     db.session.commit()
     flash('Игра удалена')
     return redirect('/admin')
