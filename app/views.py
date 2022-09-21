@@ -54,7 +54,7 @@ def game_photo(id_):
 @app.route('/game/donwload/<id_>')
 def game_apk(id_):
     name = Game.query.get(id_).apk_name
-    return send_file(app.config['PATH_TO_APP']+('applications/'+''.join(list(name.split(".")[0])[1:-1])+'.apk'), as_attachment=True, attachment_filename=name)
+    return send_file(app.config['PATH_TO_APP']+('applications/'+''.join(list(name.split(".")[0]))+'.apk'), as_attachment=True, attachment_filename=name)
 
 
 @app.route('/subscribe', methods=['GET', 'POST'])
