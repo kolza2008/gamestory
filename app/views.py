@@ -54,9 +54,10 @@ def game_photo(id_):
 @app.route('/game/donwload/<id_>')
 def game_apk(id_):
     name = Game.query.get(id_).apk_name
-    if name.split('.')[-1] == "ap":
-        name += "k"
-    return send_file(app.config['PATH_TO_APP']+('applications/'+name+".apk"), as_attachment=True, attachment_filename=name)
+    print(name)
+    name += "apk"
+    print(name)
+    return send_file(app.config['PATH_TO_APP']+('applications/'+name), as_attachment=True, attachment_filename=name)
 
 
 @app.route('/subscribe', methods=['GET', 'POST'])
