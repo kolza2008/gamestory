@@ -55,7 +55,7 @@ def game_photo(id_):
 def game_apk(id_):
     name = Game.query.get(id_).apk_name
     print(name)
-    name += "apk"
+    name += ".apk"
     print(name)
     return send_file(app.config['PATH_TO_APP']+('applications/'+name), as_attachment=True, attachment_filename=name)
 
