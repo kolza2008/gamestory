@@ -15,10 +15,10 @@ def new_game():
         apk = request.files['apk']
 
         photo_name = f"{name}.{photo.filename.split('.')[-1]}"
-        apk_name = f"{name.lower().replace(' ', '')}-{version}.apk"
+        apk_name = f"{name.lower().replace(' ', '')}-{version}"
 
         photo.save(os.path.join(app.config['PATH_TO_APP']+('photos'), photo_name))
-        apk.save(os.path.join(app.config['PATH_TO_APP']+('applications'), apk_name))
+        apk.save(os.path.join(app.config['PATH_TO_APP']+('applications'), apk_name+".apk"))
 
         game = Game(name=name,
                     timestamp=int(time.time()),
