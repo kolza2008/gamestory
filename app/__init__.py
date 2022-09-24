@@ -17,7 +17,7 @@ else:
     app.config.from_object('config.ConfigOnServer')
 
 mail = Mail(app)
-cors = CORS(app)
+cors = CORS(app, resource={r"/*":{"origins":"*"}})
 bs = Bootstrap(app)
 db = SQLAlchemy(app)
 migr = Migrate(app, db)
